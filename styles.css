@@ -130,7 +130,7 @@ footer {
   color: inherit;
 }
 
-/* Menú con botones más pequeños */
+/* ====== MENÚ PEQUEÑO ====== */
 .small-grid {
   grid-template-columns: 1fr 1fr; /* dos botones en fila */
   max-width: 400px;
@@ -147,7 +147,7 @@ footer {
   margin-bottom: 6px;
 }
 
-/* Botón de volver */
+/* ====== BOTÓN DE VOLVER ====== */
 .btn-back {
   background: #ccc;
   color: #000;
@@ -160,4 +160,15 @@ footer {
 }
 .btn-back:hover {
   background: #bbb;
+}
+
+/* ====== PANTALLA PQRS ====== */
+#pqrs .card-grid {
+  margin-top: 30px; /* baja un poco los botones */
+}
+
+#pqrs .card .icon {
+  font-size: 48px;       /* icono más grande */
+  margin-bottom: 12px;   /* separación */
+  color: var(--blue-2);
 }
