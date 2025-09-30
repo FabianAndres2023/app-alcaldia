@@ -1,9 +1,10 @@
 :root {
-  --green-1: #0EA35C;
-  --green-2: #0A6D34;
-  --text: #064b23;
+  --blue-1: #005BBB;   /* azul principal */
+  --blue-2: #004C99;   /* azul más oscuro */
+  --text: #002244;     /* azul oscuro para textos */
 }
 
+/* ====== BASE ====== */
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; font-family: Arial, sans-serif; }
 body { text-align: center; background: #fff; color: var(--text); }
@@ -13,14 +14,14 @@ body { text-align: center; background: #fff; color: var(--text); }
 /* ====== WELCOME ====== */
 .hero {
   padding: 60px 20px 100px;
-  background: linear-gradient(135deg, var(--green-1), var(--green-2));
+  background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
 }
 .hero h1 {
   margin: 0;
-  font-size: 40px;
+  font-size: 42px;
   font-weight: bold;
 }
 
@@ -28,14 +29,18 @@ body { text-align: center; background: #fff; color: var(--text); }
   margin-top: -70px;
   background: #fff;
   border-radius: 20px;
-  padding: 15px 30px;
+  padding: 20px 40px;
   box-shadow: 0 10px 20px rgba(0,0,0,.1);
 }
-.welcome-logo { width: 160px; display: block; margin: auto; }
+.welcome-logo {
+  width: 220px; /* logo más grande */
+  display: block;
+  margin: auto;
+}
 
 .btn-ingresar {
   margin-top: 25px;
-  background: linear-gradient(135deg, var(--green-1), var(--green-2));
+  background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
   padding: 14px 36px;
   font-size: 18px;
@@ -48,30 +53,35 @@ body { text-align: center; background: #fff; color: var(--text); }
 }
 .btn-ingresar:hover { transform: scale(1.05); }
 
+/* ====== REDES ====== */
 .social {
   margin: 25px 0 10px;
   display: flex;
-  gap: 30px;
+  gap: 20px;
   justify-content: center;
+  align-items: center;
 }
 .social img {
-  width: 32px; height: 32px;
-  filter: invert(26%) sepia(80%) saturate(300%) hue-rotate(90deg);
+  width: 26px;   /* tamaño uniforme */
+  height: 26px;
   cursor: pointer;
-  transition: transform .2s;
+  transition: transform .2s ease;
+  filter: none;  /* mantiene colores originales */
 }
-.social img:hover { transform: scale(1.2); }
+.social img:hover { transform: scale(1.15); }
 
+/* ====== FOOTER ====== */
 footer {
   font-size: 12px;
   color: var(--text);
-  margin-bottom: 30px;
+  margin: 15px 0 30px;
+  text-align: center;
 }
 
 .bottom-curve {
   position: absolute; bottom: 0; left: 0; right: 0;
   height: 18px;
-  background: linear-gradient(90deg, var(--green-1), var(--green-2));
+  background: linear-gradient(90deg, var(--blue-1), var(--blue-2));
   border-top-left-radius: 40px;
   border-top-right-radius: 40px;
 }
@@ -79,7 +89,7 @@ footer {
 /* ====== MENU ====== */
 .menu-hero {
   padding: 30px 20px 60px;
-  background: linear-gradient(135deg, var(--green-1), var(--green-2));
+  background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
@@ -104,5 +114,5 @@ footer {
 .card .label {
   font-size: 18px;
   font-weight: bold;
-  color: var(--green-2);
+  color: var(--blue-2);
 }
