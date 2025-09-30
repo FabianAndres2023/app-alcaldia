@@ -62,11 +62,11 @@ body { text-align: center; background: #fff; color: var(--text); }
   align-items: center;
 }
 .social img {
-  width: 26px;   /* tamaño uniforme */
+  width: 26px;
   height: 26px;
   cursor: pointer;
   transition: transform .2s ease;
-  filter: none;  /* mantiene colores originales */
+  filter: none;
 }
 .social img:hover { transform: scale(1.15); }
 
@@ -115,4 +115,49 @@ footer {
   font-size: 18px;
   font-weight: bold;
   color: var(--blue-2);
+}
+.card .icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+  display: block;
+  color: var(--blue-2);
+}
+.link-card {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: inherit;
+}
+
+/* Menú con botones más pequeños */
+.small-grid {
+  grid-template-columns: 1fr 1fr; /* dos botones en fila */
+  max-width: 400px;
+  margin: 20px auto 20px;
+}
+
+.small-card {
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.small-card .icon {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+/* Botón de volver */
+.btn-back {
+  background: #ccc;
+  color: #000;
+  padding: 10px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.btn-back:hover {
+  background: #bbb;
 }

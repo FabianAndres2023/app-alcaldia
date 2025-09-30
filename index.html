@@ -21,56 +21,80 @@
     <button class="btn-ingresar" onclick="goTo('menu')">INGRESAR</button>
 
     <!-- Redes sociales -->
-   <div class="social">
-  <!-- Facebook -->
-  <a href="https://www.facebook.com/AlcaldiaDeTulua" target="_blank" aria-label="Facebook">
-    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook">
-  </a>
+    <div class="social">
+      <a href="https://www.facebook.com/" target="_blank" aria-label="Facebook">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook">
+      </a>
+      <a href="https://twitter.com/" target="_blank" aria-label="Twitter">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter">
+      </a>
+      <a href="https://www.youtube.com/" target="_blank" aria-label="YouTube">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube">
+      </a>
+      <a href="https://www.instagram.com/" target="_blank" aria-label="Instagram">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
+      </a>
+      <a href="https://www.google.com/chrome/" target="_blank" aria-label="Google Chrome">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlechrome.svg" alt="Google Chrome">
+      </a>
+    </div>
 
-  <!-- Twitter (X) -->
-  <a href="https://x.com/alcaldiadetulua" target="_blank" aria-label="Twitter">
-    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter">
-  </a>
-
-  <!-- YouTube -->
-  <a href="https://www.youtube.com/channel/UCGLrd7LLrcksp04eJEfMdgQ/featured" target="_blank" aria-label="YouTube">
-    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube">
-  </a>
-
-  <!-- Instagram -->
-  <a href="https://www.instagram.com/alcaldiadetulua/" target="_blank" aria-label="Instagram">
-    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
-  </a>
-
-  <!-- Google (Chrome) -->
-  <a href="https://tulua.gov.co/" target="_blank" aria-label="Google Chrome">
-    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlechrome.svg" alt="Google Chrome">
-  </a>
-</div>
-
-<footer>
-  <p>Copyright 2025 - Todos los derechos reservados</p>
-</footer>
+    <!-- Footer -->
+    <footer>
+      <p>Copyright 2025 - Todos los derechos reservados</p>
+    </footer>
 
     <div class="bottom-curve"></div>
   </section>
 
-  <!-- ========== MENÚ PRINCIPAL ========== -->
-  <section id="menu" class="screen">
+<!-- ========== MENÚ PRINCIPAL ========== -->
+<section id="menu" class="screen">
+  <header class="menu-hero">
+    <h2>Alcaldía de Tuluá</h2>
+    <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
+  </header>
+
+  <div class="card-grid small-grid">
+    <!-- Predial -->
+    <button class="card small-card" onclick="alert('Predial en construcción')">
+      <span class="icon">📄</span>
+      <span class="label">PREDIAL</span>
+    </button>
+
+    <!-- PQRS -->
+    <button class="card small-card" onclick="goTo('pqrs')">
+      <span class="icon">💬</span>
+      <span class="label">PQRS</span>
+    </button>
+  </div>
+
+  <!-- Botón devolver -->
+  <button class="btn-back" onclick="goTo('welcome')">⬅️ Volver</button>
+</section>
+
+
+  <!-- ========== PANTALLA PQRS ========== -->
+  <section id="pqrs" class="screen">
     <header class="menu-hero">
-      <h2>Alcaldía de Tuluá</h2>
-      <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
+      <h2>PQRS</h2>
+      <p>Seleccione una opción:</p>
     </header>
 
     <div class="card-grid">
-      <button class="card" onclick="alert('Predial en construcción')">
-        <span class="label">PREDIAL UNIFICADO</span>
-      </button>
+      <!-- Descripción PQRS -->
+      <a class="card link-card" href="https://tulua.tramiter.co/home/descripcion-tramites" target="_blank">
+        <span class="icon">ℹ️</span>
+        <span class="label">Descripción de PQRS</span>
+      </a>
 
-      <button class="card" onclick="alert('PQRS en construcción')">
-        <span class="label">PQRS</span>
-      </button>
+      <!-- Realizar trámite PQRS -->
+      <a class="card link-card" href="https://tulua.tramiter.co/home" target="_blank">
+        <span class="icon">📝</span>
+        <span class="label">Realizar PQRS</span>
+      </a>
     </div>
+
+    <button class="btn-ingresar" onclick="goTo('menu')">⬅️ Volver al Menú</button>
   </section>
 
   <script src="app.js"></script>
