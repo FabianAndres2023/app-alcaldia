@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alcaldía de Bugalagrande</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+  <!-- Pantalla de bienvenida -->
+  <section id="welcome" class="screen active">
+    <h1>¡Bienvenido!</h1>
+    <img src="logo.png" alt="Escudo" class="logo" />
+    <button onclick="goTo('menu')">INGRESAR</button>
+  </section>
+
+  <!-- Pantalla de menú principal -->
+  <section id="menu" class="screen">
+    <h2>Alcaldía de Bugalagrande</h2>
+    <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
+    <div class="menu-buttons">
+      <button onclick="alert('Predial en construcción')">PREDIAL UNIFICADO</button>
+      <button onclick="alert('PQRS en construcción')">PQRS</button>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

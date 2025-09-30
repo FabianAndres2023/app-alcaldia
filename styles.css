@@ -1,0 +1,33 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  background: #fff;
+  color: #064b23;
+}
+
+.screen {
+  display: none;
+  padding: 20px;
+}
+
+.screen.active {
+  display: block;
+}
+
+.logo {
+  width: 120px;
+  margin: 20px auto;
+  display: block;
+}
+
+button {
+  background: #0c9447;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  margin: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
