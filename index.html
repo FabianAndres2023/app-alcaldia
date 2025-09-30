@@ -2,26 +2,61 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alcaldía de Bugalagrande</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alcaldía de Tuluá</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest.json" />
 </head>
 <body>
-  <!-- Pantalla de bienvenida -->
+  <!-- ========== PANTALLA DE BIENVENIDA ========== -->
   <section id="welcome" class="screen active">
-    <h1>¡Bienvenido!</h1>
-    <img src="logo.png" alt="Escudo" class="logo" />
-    <button onclick="goTo('menu')">INGRESAR</button>
+    <div class="hero">
+      <h1>¡Bienvenido!</h1>
+    </div>
+
+    <div class="logo-card">
+      <img src="logo.png" alt="Logo Alcaldía de Tuluá" class="welcome-logo" />
+    </div>
+
+    <button class="btn-ingresar" onclick="goTo('menu')">INGRESAR</button>
+
+    <!-- Redes sociales -->
+    <div class="social">
+      <a href="https://twitter.com" target="_blank" aria-label="X">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X">
+      </a>
+      <a href="https://facebook.com" target="_blank" aria-label="Facebook">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook">
+      </a>
+      <a href="https://tulua.gov.co" target="_blank" aria-label="Sitio Web">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/internetexplorer.svg" alt="Web">
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>App desarrollada por: <strong>Cero1 Software</strong><br>
+      Copyright 2025 - Todos los derechos reservados</p>
+    </footer>
+
+    <div class="bottom-curve"></div>
   </section>
 
-  <!-- Pantalla de menú principal -->
+  <!-- ========== MENÚ PRINCIPAL ========== -->
   <section id="menu" class="screen">
-    <h2>Alcaldía de Bugalagrande</h2>
-    <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
-    <div class="menu-buttons">
-      <button onclick="alert('Predial en construcción')">PREDIAL UNIFICADO</button>
-      <button onclick="alert('PQRS en construcción')">PQRS</button>
+    <header class="menu-hero">
+      <h2>Alcaldía de Tuluá</h2>
+      <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
+    </header>
+
+    <div class="card-grid">
+      <button class="card" onclick="alert('Predial en construcción')">
+        <span class="label">PREDIAL UNIFICADO</span>
+      </button>
+
+      <button class="card" onclick="alert('PQRS en construcción')">
+        <span class="label">PQRS</span>
+      </button>
     </div>
   </section>
 
