@@ -33,7 +33,7 @@ body { text-align: center; background: #fff; color: var(--text); }
   box-shadow: 0 10px 20px rgba(0,0,0,.1);
 }
 .welcome-logo {
-  width: 240px; /* más grande */
+  width: 240px;
   display: block;
   margin: auto;
 }
@@ -99,19 +99,30 @@ footer {
 .menu-hero h2 { margin: 0; font-size: 30px; }
 .menu-hero p { margin: 8px 0 0; }
 
-/* Logo fijo en la esquina superior derecha */
+/* Logo superior derecho */
 .header-logo {
   position: absolute;
   top: 15px;
   right: 25px;
-  width: 140px;  /* tamaño en PC */
+  width: 140px;
   height: auto;
 }
+
+/* Ajuste para móviles */
 @media (max-width: 768px) {
   .header-logo {
-    width: 100px; /* tamaño en móvil */
-    top: 10px;
+    width: 120px;   /* más grande */
+    top: 5px;       /* más arriba */
     right: 15px;
+  }
+}
+
+/* Ajuste para celulares muy pequeños */
+@media (max-width: 480px) {
+  .header-logo {
+    width: 130px;   /* aún más grande */
+    top: 0;
+    right: 10px;
   }
 }
 
