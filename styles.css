@@ -102,7 +102,7 @@ footer {
 /* Logo superior derecho */
 .header-logo {
   position: absolute;
-  top: 300px;
+  top: 200px;
   right: 30px;
   width: 110px;
 }
