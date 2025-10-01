@@ -1,7 +1,7 @@
 :root {
-  --blue-1: #005BBB;   /* azul principal */
-  --blue-2: #004C99;   /* azul más oscuro */
-  --text: #002244;     /* azul oscuro para textos */
+  --blue-1: #005BBB;
+  --blue-2: #004C99;
+  --text: #002244;
 }
 
 /* ====== BASE ====== */
@@ -33,13 +33,13 @@ body { text-align: center; background: #fff; color: var(--text); }
   box-shadow: 0 10px 20px rgba(0,0,0,.1);
 }
 .welcome-logo {
-  width: 220px;
+  width: 240px; /* más grande */
   display: block;
   margin: auto;
 }
 
 .btn-ingresar {
-  margin-top: 25px;
+  margin-top: 20px;
   background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
   padding: 14px 36px;
@@ -88,17 +88,35 @@ footer {
 
 /* ====== MENU ====== */
 .menu-hero {
-  padding: 30px 20px 60px;
+  position: relative;
+  padding: 40px 20px 70px;
   background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
+  text-align: center;
 }
-.menu-hero h2 { margin: 0; font-size: 28px; }
+.menu-hero h2 { margin: 0; font-size: 30px; }
+.menu-hero p { margin: 8px 0 0; }
 
-/* ====== TARJETAS ====== */
+/* Logo fijo en la esquina superior derecha */
+.header-logo {
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  width: 140px;  /* tamaño en PC */
+  height: auto;
+}
+@media (max-width: 768px) {
+  .header-logo {
+    width: 100px; /* tamaño en móvil */
+    top: 10px;
+    right: 15px;
+  }
+}
+
 .card-grid {
-  margin-top: -40px;
+  margin-top: -30px;
   display: grid;
   gap: 20px;
   padding: 20px;
@@ -147,7 +165,7 @@ footer {
   margin-bottom: 6px;
 }
 
-/* ====== PANTALLA PQRS ====== */
+/* ====== PQRS ====== */
 #pqrs .card-grid {
   margin-top: 30px;
 }
@@ -155,20 +173,4 @@ footer {
   font-size: 48px;
   margin-bottom: 12px;
   color: var(--blue-2);
-}
-
-/* ====== LOGO FIJO ====== */
-.fixed-logo {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
-  width: 120px;
-  z-index: 1000;
-}
-@media (max-width: 768px) {
-  .fixed-logo {
-    width: 200px;
-    bottom: 10px;
-    right: 10px;
-  }
 }
