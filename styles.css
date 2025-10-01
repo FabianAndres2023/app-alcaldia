@@ -26,20 +26,21 @@ body { text-align: center; background: #fff; color: var(--text); }
 }
 
 .logo-card {
-  margin-top: -70px;
+  margin-top: -80px;  
   background: #fff;
   border-radius: 20px;
-  padding: 20px 40px;
+  padding: 10px 20px;   /* 👈 menos espacio */
   box-shadow: 0 10px 20px rgba(0,0,0,.1);
 }
+
 .welcome-logo {
-  width: 220px; /* logo más grande */
+  width: 300px;
   display: block;
   margin: auto;
 }
 
 .btn-ingresar {
-  margin-top: 25px;
+  margin-top: -10px;
   background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
   padding: 14px 36px;
@@ -88,6 +89,7 @@ footer {
 
 /* ====== MENU ====== */
 .menu-hero {
+  position: relative;
   padding: 30px 20px 60px;
   background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
@@ -95,6 +97,15 @@ footer {
   border-bottom-right-radius: 25px;
 }
 .menu-hero h2 { margin: 0; font-size: 28px; }
+.menu-hero p { margin: 10px 0 0; }
+
+/* Logo superior derecho */
+.header-logo {
+  position: absolute;
+  top: -30px;
+  right: 40px;
+  width: 300px;
+}
 
 .card-grid {
   margin-top: -40px;
@@ -117,7 +128,7 @@ footer {
   color: var(--blue-2);
 }
 .card .icon {
-  font-size: 36px;
+  font-size: 300px;
   margin-bottom: 10px;
   display: block;
   color: var(--blue-2);
@@ -132,7 +143,7 @@ footer {
 
 /* ====== MENÚ PEQUEÑO ====== */
 .small-grid {
-  grid-template-columns: 1fr 1fr; /* dos botones en fila */
+  grid-template-columns: 1fr 1fr;
   max-width: 400px;
   margin: 20px auto 20px;
 }
@@ -141,7 +152,6 @@ footer {
   padding: 15px;
   border-radius: 12px;
 }
-
 .small-card .icon {
   font-size: 28px;
   margin-bottom: 6px;
@@ -158,17 +168,12 @@ footer {
   cursor: pointer;
   margin-top: 10px;
 }
-.btn-back:hover {
-  background: #bbb;
-}
+.btn-back:hover { background: #bbb; }
 
 /* ====== PANTALLA PQRS ====== */
-#pqrs .card-grid {
-  margin-top: 30px; /* baja un poco los botones */
-}
-
+#pqrs .card-grid { margin-top: 30px; }
 #pqrs .card .icon {
-  font-size: 48px;       /* icono más grande */
-  margin-bottom: 12px;   /* separación */
+  font-size: 48px;
+  margin-bottom: 12px;
   color: var(--blue-2);
 }

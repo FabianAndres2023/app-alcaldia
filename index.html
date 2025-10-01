@@ -47,47 +47,48 @@
     <div class="bottom-curve"></div>
   </section>
 
-<!-- ========== MENÚ PRINCIPAL ========== -->
-<section id="menu" class="screen">
-  <header class="menu-hero">
-    <h2>Alcaldía de Tuluá</h2>
-    <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
-  </header>
+  <!-- ========== MENÚ PRINCIPAL ========== -->
+  <section id="menu" class="screen">
+    <header class="menu-hero">
+      <h2>Alcaldía de Tuluá</h2>
+      <img src="logo.png" alt="Logo" class="header-logo">
+      <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
+    </header>
 
-  <div class="card-grid small-grid">
-    <!-- Predial -->
-    <a class="card small-card link-card" href="https://portal-tulua.softwaretributario.com/" target="_blank">
-    <span class="icon">📄</span>
-    <span class="label">PREDIAL</span>
-    </a>
+    <div class="card-grid small-grid">
+      <!-- Pagos en linea -->
+      <a class="card small-card link-card" href="https://portal-tulua.softwaretributario.com/" target="_blank">
+        <span class="icon">📄</span>
+        <span class="label">PAGOS EN LINEA</span>
+      </a>
 
-    <!-- PQRS -->
-    <button class="card small-card" onclick="goTo('pqrs')">
-      <span class="icon">💬</span>
-      <span class="label">PQRSDF</span>
-    </button>
-  </div>
+      <!-- PQRS -->
+      <button class="card small-card" onclick="goTo('pqrs')">
+        <span class="icon">💬</span>
+        <span class="label">PQRSDF</span>
+      </button>
+    </div>
 
-  <!-- Botón devolver -->
-  <button class="btn-back" onclick="goTo('welcome')">⬅️ Volver</button>
-</section>
-
+    <!-- Botón devolver -->
+    <button class="btn-ingresar" onclick="goTo('welcome')">⬅️ Volver al Menú</button>
+  </section>
 
   <!-- ========== PANTALLA PQRSDF ========== -->
   <section id="pqrs" class="screen">
     <header class="menu-hero">
       <h2>PQRSDF</h2>
+      <img src="logo.png" alt="Logo" class="header-logo">
       <p>Seleccione una opción:</p>
     </header>
 
     <div class="card-grid">
-      <!-- Descripción PQRS -->
+      <!-- Información PQRS -->
       <a class="card link-card" href="https://tulua.tramiter.co/home/descripcion-tramites" target="_blank">
         <span class="icon">ℹ️</span>
-        <span class="label">Descripción PQRSDF</span>
+        <span class="label">Información PQRSDF</span>
       </a>
 
-      <!-- Realizar trámite PQRS -->
+      <!-- Realizar PQRS -->
       <a class="card link-card" href="https://tulua.tramiter.co/home" target="_blank">
         <span class="icon">📝</span>
         <span class="label">Registrar PQRSDF</span>
