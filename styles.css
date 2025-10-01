@@ -89,17 +89,26 @@ footer {
 /* ====== MENU ====== */
 .menu-hero {
   position: relative;
-  padding: 40px 20px 70px;
+  padding: 40px 20px 100px;
   background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
   text-align: center;
 }
-.menu-hero h2 { margin: 0; font-size: 30px; }
-.menu-hero p { margin: 8px 0 0; }
 
-/* Logo superior derecho */
+/* Deja espacio para el logo a la derecha (solo PC) */
+.menu-hero h2 {
+  margin: 0;
+  font-size: 30px;
+  padding-right: 140px;
+}
+.menu-hero p {
+  margin: 8px 0 0;
+  padding-right: 140px;
+}
+
+/* Logo en la esquina superior derecha */
 .header-logo {
   position: absolute;
   top: 15px;
@@ -108,20 +117,33 @@ footer {
   height: auto;
 }
 
-/* Ajuste para móviles */
+/* Ajuste en móviles */
 @media (max-width: 768px) {
+  .menu-hero {
+    padding: 70px 20px 100px; /* más espacio arriba */
+  }
+
+  .menu-hero h2,
+  .menu-hero p {
+    padding-right: 0; /* textos centrados en móvil */
+  }
+
   .header-logo {
-    width: 120px;   /* más grande */
-    top: 5px;       /* más arriba */
+    width: 120px;  /* más grande */
+    top: 10px;     /* más arriba */
     right: 15px;
   }
 }
 
-/* Ajuste para celulares muy pequeños */
+/* Ajuste en celulares pequeños */
 @media (max-width: 480px) {
+  .menu-hero {
+    padding: 80px 20px 100px; /* aún más espacio arriba */
+  }
+
   .header-logo {
-    width: 130px;   /* aún más grande */
-    top: 0;
+    width: 130px;
+    top: 5px;
     right: 10px;
   }
 }
