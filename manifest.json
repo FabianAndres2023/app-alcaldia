@@ -3,13 +3,13 @@
   "name": "Alcaldía de Tuluá",
   "short_name": "Alcaldía",
   "description": "Aplicación móvil de trámites de la Alcaldía de Tuluá. Incluye PQRSDF, pagos en línea y más servicios municipales.",
-  "start_url": "/app-alcaldia/index.html",
-  "scope": "/app-alcaldia/",
-  "display": "fullscreen",
-  "display_override": ["fullscreen", "standalone"],
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#0c9447",
+  "theme_color": "#005BBB",
   "lang": "es-CO",
   "dir": "ltr",
   "categories": ["government", "productivity"],
@@ -18,24 +18,14 @@
     {
       "src": "logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshot1.png",
-      "sizes": "1080x1920",
-      "type": "image/png"
-    },
-    {
-      "src": "screenshot2.png",
-      "sizes": "1080x1920",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

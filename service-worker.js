@@ -1,51 +1,80 @@
-const CACHE_NAME = "alcaldia-tulua-v1";
-const urlsToCache = [
-  "/",                // raíz
-  "/index.html",
-  "/styles.css",
-  "/app.js",
-  "/manifest.json",
-  "/logo.png"
-];
+// Sube la versión para forzar actualización del SW cuando cambies algo
+const CACHE_NAME = "alcaldia-tulua-v3";
 
-// Instalación: cachea los archivos base
+// Resuelve rutas respecto al scope (p. ej. https://.../app-alcaldia/)
+const resolve = (path) => new URL(path, self.registration.scope).toString();
+
+const ASSETS = [
+  "index.html",
+  "styles.css",
+  "app.js",
+  "manifest.json",
+  "logo.png"
+].map(resolve);
+
+// INSTALL: cachea assets base
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
-    })
-  );
-  self.skipWaiting(); // fuerza a activar el SW inmediatamente
+  event.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
+  self.skipWaiting();
 });
 
-// Activación: limpia caches viejos
+// ACTIVATE: limpia caches viejos y habilita navigation preload
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
-  );
-  self.clients.claim(); // controla todas las páginas abiertas
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)));
+    if ("navigationPreload" in self.registration) {
+      await self.registration.navigationPreload.enable();
+    }
+    await self.clients.claim();
+  })());
 });
 
-// Intercepta las peticiones
+// FETCH:
+//  - Navegación: network-first, fallback a cache y luego a index.html offline.
+//  - Recursos same-origin: cache-first con actualización en background.
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Si está en cache, devuelve cache; si no, pide a la red
-      return (
-        response ||
-        fetch(event.request).catch(() => {
-          // Offline fallback: si quieres, aquí puedes devolver un HTML de error
-          if (event.request.mode === "navigate") {
-            return caches.match("/index.html");
-          }
-        })
+  const { request } = event;
+  const url = new URL(request.url);
+
+  if (url.origin !== self.location.origin) return;
+
+  if (request.mode === "navigate") {
+    event.respondWith((async () => {
+      try {
+        const preload = await event.preloadResponse;
+        if (preload) return preload;
+
+        const net = await fetch(request);
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(request, net.clone());
+        return net;
+      } catch {
+        const cached = await caches.match(request);
+        return cached || caches.match(resolve("index.html"));
+      }
+    })());
+    return;
+  }
+
+  event.respondWith((async () => {
+    const cached = await caches.match(request);
+    if (cached) {
+      caches.open(CACHE_NAME).then(cache =>
+        fetch(request).then(resp => cache.put(request, resp.clone())).catch(() => {})
       );
-    })
-  );
+      return cached;
+    }
+    try {
+      const resp = await fetch(request);
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, resp.clone());
+      return resp;
+    } catch {
+      if (request.destination === "document") {
+        return caches.match(resolve("index.html"));
+      }
+      return new Response("", { status: 504, statusText: "Offline" });
+    }
+  })());
 });

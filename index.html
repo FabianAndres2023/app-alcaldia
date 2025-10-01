@@ -4,8 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Alcaldía de Tuluá</title>
-  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Colores del navegador / Splash -->
+  <meta name="theme-color" content="#005BBB" />
   <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="logo.png" />
+
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <!-- ========== PANTALLA DE BIENVENIDA ========== -->
@@ -25,8 +30,8 @@
       <a href="https://www.facebook.com/AlcaldiaDeTulua" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook">
       </a>
-      <a href="https://x.com/alcaldiadetulua" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter">
+      <a href="https://x.com/alcaldiadetulua" target="_blank" rel="noopener noreferrer" aria-label="X">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X">
       </a>
       <a href="https://www.youtube.com/channel/UCGLrd7LLrcksp04eJEfMdgQ/featured" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube">
@@ -34,12 +39,11 @@
       <a href="https://www.instagram.com/alcaldiadetulua/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
         <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram">
       </a>
-      <a href="https://tulua.gov.co/" target="_blank" rel="noopener noreferrer" aria-label="Google Chrome">
-        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlechrome.svg" alt="Google Chrome">
+      <a href="https://tulua.gov.co/" target="_blank" rel="noopener noreferrer" aria-label="Sitio Web">
+        <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlechrome.svg" alt="Chrome">
       </a>
     </div>
 
-    <!-- Footer -->
     <footer>
       <p>Copyright 2025 - Todos los derechos reservados</p>
     </footer>
@@ -52,24 +56,25 @@
     <header class="menu-hero">
       <h2>Alcaldía de Tuluá</h2>
       <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
+
+      <!-- Logo fijo en el header -->
       <img src="logo.png" alt="Logo" class="header-logo">
     </header>
 
     <div class="card-grid small-grid">
-      <!-- Pagos en linea -->
+      <!-- Pagos en línea -->
       <a class="card small-card link-card" href="https://portal-tulua.softwaretributario.com/" target="_blank" rel="noopener noreferrer">
         <span class="icon">📄</span>
         <span class="label">PAGOS EN LINEA</span>
       </a>
 
-      <!-- PQRS -->
+      <!-- PQRSDF -->
       <button class="card small-card" onclick="goTo('pqrs')">
         <span class="icon">💬</span>
         <span class="label">PQRSDF</span>
       </button>
     </div>
 
-    <!-- Botón devolver -->
     <button class="btn-ingresar" onclick="goTo('welcome')">⬅️ Volver al Menú</button>
   </section>
 
@@ -78,17 +83,17 @@
     <header class="menu-hero">
       <h2>PQRSDF</h2>
       <p>Seleccione una opción:</p>
+
+      <!-- Logo fijo en el header -->
       <img src="logo.png" alt="Logo" class="header-logo">
     </header>
 
     <div class="card-grid">
-      <!-- Información PQRS -->
       <a class="card link-card" href="https://tulua.tramiter.co/home/descripcion-tramites" target="_blank" rel="noopener noreferrer">
         <span class="icon">ℹ️</span>
         <span class="label">Información PQRSDF</span>
       </a>
 
-      <!-- Realizar PQRS -->
       <a class="card link-card" href="https://tulua.tramiter.co/home" target="_blank" rel="noopener noreferrer">
         <span class="icon">📝</span>
         <span class="label">Registrar PQRSDF</span>
@@ -99,13 +104,14 @@
   </section>
 
   <script src="app.js"></script>
-  <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js")
-      .then(() => console.log("✅ Service Worker registrado"))
-      .catch(err => console.error("❌ Error registrando SW:", err));
-  }
-</script>
 
+  <!-- Registro del Service Worker (scope relativo a la carpeta) -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register(new URL("service-worker.js", location.href), { scope: "./" })
+        .then(() => console.log("✅ Service Worker registrado"))
+        .catch(err => console.error("❌ Error registrando SW:", err));
+    }
+  </script>
 </body>
 </html>
