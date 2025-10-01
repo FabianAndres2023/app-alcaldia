@@ -26,21 +26,20 @@ body { text-align: center; background: #fff; color: var(--text); }
 }
 
 .logo-card {
-  margin-top: -80px;  
+  margin-top: -70px;
   background: #fff;
   border-radius: 20px;
-  padding: 10px 20px;   /* 👈 menos espacio */
+  padding: 20px 40px;
   box-shadow: 0 10px 20px rgba(0,0,0,.1);
 }
-
 .welcome-logo {
-  width: 300px;
+  width: 220px;
   display: block;
   margin: auto;
 }
 
 .btn-ingresar {
-  margin-top: -10px;
+  margin-top: 25px;
   background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
   padding: 14px 36px;
@@ -89,7 +88,6 @@ footer {
 
 /* ====== MENU ====== */
 .menu-hero {
-  position: relative;
   padding: 30px 20px 60px;
   background: linear-gradient(135deg, var(--blue-1), var(--blue-2));
   color: #fff;
@@ -97,16 +95,8 @@ footer {
   border-bottom-right-radius: 25px;
 }
 .menu-hero h2 { margin: 0; font-size: 28px; }
-.menu-hero p { margin: 10px 0 0; }
 
-/* Logo superior derecho */
-.header-logo {
-  position: absolute;
-  top: 300px;
-  right: 30px;
-  width: 110px;
-}
-
+/* ====== TARJETAS ====== */
 .card-grid {
   margin-top: -40px;
   display: grid;
@@ -128,7 +118,7 @@ footer {
   color: var(--blue-2);
 }
 .card .icon {
-  font-size: 300px;
+  font-size: 36px;
   margin-bottom: 10px;
   display: block;
   color: var(--blue-2);
@@ -157,31 +147,28 @@ footer {
   margin-bottom: 6px;
 }
 
-/* ====== BOTÓN DE VOLVER ====== */
-.btn-back {
-  background: #ccc;
-  color: #000;
-  padding: 10px 20px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-.btn-back:hover { background: #bbb; }
-
 /* ====== PANTALLA PQRS ====== */
-#pqrs .card-grid { margin-top: 30px; }
+#pqrs .card-grid {
+  margin-top: 30px;
+}
 #pqrs .card .icon {
   font-size: 48px;
   margin-bottom: 12px;
   color: var(--blue-2);
 }
-.header-logo {
-  margin-top: 15px;   /* espacio respecto al texto */
-  width: 140px;       /* tamaño del logo */
-  max-width: 60%;     /* adaptable a pantallas pequeñas */
-  display: block;
-  margin-left: auto;
-  margin-right: auto; /* centrado */
+
+/* ====== LOGO FIJO ====== */
+.fixed-logo {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  width: 120px;
+  z-index: 1000;
+}
+@media (max-width: 768px) {
+  .fixed-logo {
+    width: 90px;
+    bottom: 10px;
+    right: 10px;
+  }
 }
