@@ -1,10 +1,19 @@
 {
-  "name": "Alcaldía Bugalagrande",
+  "id": "gov.tulua.app",
+  "name": "Alcaldía de Tuluá",
   "short_name": "Alcaldía",
-  "start_url": "./index.html",
+  "description": "Aplicación móvil de trámites de la Alcaldía de Tuluá. Incluye PQRSDF, pagos en línea y más servicios municipales.",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone"],
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#0c9447",
+  "lang": "es-CO",
+  "dir": "ltr",
+  "categories": ["government", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "logo.png",
@@ -14,6 +23,18 @@
     {
       "src": "logo.png",
       "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "1080x1920",
       "type": "image/png"
     }
   ]
