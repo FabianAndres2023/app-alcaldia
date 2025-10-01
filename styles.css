@@ -102,9 +102,9 @@ footer {
 /* Logo superior derecho */
 .header-logo {
   position: absolute;
-  top: -30px;
-  right: 40px;
-  width: 300px;
+  top: 30px;
+  right: 20px;
+  width: 200px;
 }
 
 .card-grid {
