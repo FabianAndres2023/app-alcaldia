@@ -86,14 +86,22 @@
         <span class="icon">📝</span>
         <span class="label">Registrar PQRSDF</span>
       </a>
+
+      <!-- NUEVO: Consultar Trámite -->
+      <a class="card link-card" href="https://tulua.tramiter.co/documentos/consultar-tramite-web" target="_blank">
+        <span class="icon">🔎</span>
+        <span class="label">Consultar Trámite</span>
+      </a>
     </div>
 
     <button class="btn-ingresar" onclick="goTo('menu')">⬅️ Volver</button>
   </section>
 
-  <script src="app.js"></script>
+  <!-- Carga el JS al final para asegurar que window.goTo esté en global -->
+  <script src="app.js" defer></script>
 
   <script>
+    // Registro del Service Worker con scope local
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
         .then(() => console.log("✅ Service Worker registrado"))
