@@ -19,6 +19,7 @@
   "homepage": "https://github.com/FabianAndres2023/app-alcaldia#readme",
   "devDependencies": {
     "@capacitor/android": "^5.7.8",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^5.7.8",
     "@capacitor/core": "^5.7.8"
   }
