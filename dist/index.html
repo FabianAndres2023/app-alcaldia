@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alcaldía de Tuluá</title>
+
+  <!-- Colores del navegador / Splash -->
+  <meta name="theme-color" content="#005BBB" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Alcaldía de Tuluá" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="icon" href="logo.png" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ========== PANTALLA DE BIENVENIDA ========== -->
+  <section id="welcome" class="screen active">
+    <div class="hero">
+      <h1>¡Bienvenido!</h1>
+    </div>
+
+    <div class="logo-card">
+      <img src="logo.png" alt="Logo Alcaldía de Tuluá" class="welcome-logo" />
+    </div>
+
+    <button class="btn-ingresar" onclick="goTo('menu')">INGRESAR</button>
+
+    <div class="social">
+      <a href="https://www.facebook.com/AlcaldiaDeTulua" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook"></a>
+      <a href="https://x.com/alcaldiadetulua" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X"></a>
+      <a href="https://www.youtube.com/channel/UCGLrd7LLrcksp04eJEfMdgQ/featured" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube"></a>
+      <a href="https://www.instagram.com/alcaldiadetulua/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram"></a>
+      <a href="https://tulua.gov.co/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlechrome.svg" alt="Sitio Web"></a>
+    </div>
+
+    <footer>
+      <p>Copyright 2025 - Todos los derechos reservados</p>
+    </footer>
+
+    <div class="bottom-curve"></div>
+  </section>
+
+  <!-- ========== MENÚ PRINCIPAL ========== -->
+  <section id="menu" class="screen">
+    <header class="menu-hero">
+      <h2>Alcaldía de Tuluá</h2>
+      <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
+      <img src="logo.png" alt="Logo" class="header-logo">
+    </header>
+
+    <div class="card-grid small-grid">
+      <a class="card small-card link-card" href="https://portal-tulua.softwaretributario.com/" target="_blank">
+        <span class="icon">📄</span>
+        <span class="label">PAGOS EN LÍNEA</span>
+      </a>
+
+      <button class="card small-card" onclick="goTo('pqrs')">
+        <span class="icon">💬</span>
+        <span class="label">PQRSDF</span>
+      </button>
+    </div>
+
+    <button class="btn-ingresar" onclick="goTo('welcome')">⬅️ Volver</button>
+  </section>
+
+  <!-- ========== PQRSDF ========== -->
+  <section id="pqrs" class="screen">
+    <header class="menu-hero">
+      <h2>PQRSDF</h2>
+      <p>Seleccione una opción:</p>
+      <img src="logo.png" alt="Logo" class="header-logo">
+    </header>
+
+    <div class="card-grid">
+      <a class="card link-card" href="https://tulua.tramiter.co/home/descripcion-tramites" target="_blank">
+        <span class="icon">ℹ️</span>
+        <span class="label">Información PQRSDF</span>
+      </a>
+
+      <a class="card link-card" href="https://tulua.tramiter.co/home" target="_blank">
+        <span class="icon">📝</span>
+        <span class="label">Registrar PQRSDF</span>
+      </a>
+
+      <!-- NUEVO: Consultar Trámite -->
+      <a class="card link-card" href="https://tulua.tramiter.co/documentos/consultar-tramite-web" target="_blank">
+        <span class="icon">🔎</span>
+        <span class="label">Consultar Trámite</span>
+      </a>
+    </div>
+
+    <button class="btn-ingresar" onclick="goTo('menu')">⬅️ Volver</button>
+  </section>
+
+  <!-- Carga el JS al final para asegurar que window.goTo esté en global -->
+  <script src="app.js" defer></script>
+
+  <script>
+    // Registro del Service Worker con scope local
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
+        .then(() => console.log("✅ Service Worker registrado"))
+        .catch(err => console.error("❌ Error registrando SW:", err));
+    }
+  </script>
+</body>
+</html>
