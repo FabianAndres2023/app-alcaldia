@@ -1,3 +1,20 @@
+pluginManagement {
+  repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+dependencyResolutionManagement {
+  // ✅ Permite que los módulos (como capacitor-android) definan repositorios
+  repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+  repositories {
+    google()
+    mavenCentral()
+  }
+}
+
 include ':app'
 // include ':capacitor-cordova-android-plugins'
 // project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
