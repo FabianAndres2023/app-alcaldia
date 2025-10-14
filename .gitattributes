@@ -1,11 +1,23 @@
-# Fuerza a Git a manejar saltos de línea correctamente
-* text=auto
-*.js text eol=lf
-*.ts text eol=lf
+# Normaliza todos los textos a LF en el repo
+* text=auto eol=lf
+
+# Archivos binarios (no tocar EOL)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.apk binary
+*.aab binary
+
+# Opcional: forzar LF explícito en tipos comunes
+*.js   text eol=lf
+*.ts   text eol=lf
+*.css  text eol=lf
 *.html text eol=lf
-*.css text eol=lf
-*.gradle text eol=lf
-*.xml text eol=lf
 *.json text eol=lf
-*.md text eol=lf
-*.java text eol=lf
+*.xml  text eol=lf
+*.gradle text eol=lf
+*.md   text eol=lf
+
+# Si usas .bat de Windows, déjalos con CRLF:
+*.bat text eol=crlf
