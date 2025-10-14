@@ -1,29 +1,17 @@
-# Node
+# === Ignorar solo cosas realmente innecesarias ===
 node_modules/
 npm-debug.log
 yarn-error.log
 
-# Capacitor / Ionic
-www/
-dist/
-build/
-!.gitkeep
-
-# Android build files
+# === Android: ignora solo los caches temporales ===
 android/.gradle/
 android/.idea/
 android/local.properties
 android/app/build/
 android/build/
-android/capacitor-cordova-android-plugins/
-android/capacitor-cordova-android-plugins/*
-android/capacitor-cordova-android-plugins/**
 
-# System / editor
+# === Archivos del sistema y del editor ===
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-
-# Service workers / cache
-service-worker.js
