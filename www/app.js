@@ -52,6 +52,13 @@ async function ensureNotificationPermission() {
  *  MOSTRAR NOTIFICACIONES
  *************************************************/
 async function notifyUnified({ title, body, url, tag }) {
+  if (!url) url = null;
+
+  // 🔗 Forzar vista de escritorio agregando parámetro
+  if (url && !url.includes("desktop=1")) {
+    url += (url.includes("?") ? "&" : "?") + "desktop=1";
+  }
+
   if (isNative && LocalNotifications) {
     const at = new Date(Date.now() + 1000);
     try {
@@ -283,3 +290,22 @@ window.forzarCambio = (key = 'edictos') => {
 
 window.testNotify = () =>
   notifyUnified({ title: "Prueba", body: "Hola desde notifyUnified", url: "https://tulua.gov.co", tag: "demo" });
+
+/*************************************************
+ *  NAVEGACIÓN ENTRE PANTALLAS INTERNAS
+ *************************************************/
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+}
+
+// Asignar eventos a todos los botones que tengan data-target
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-target]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.getAttribute("data-target");
+      goTo(target);
+    });
+  });
+});

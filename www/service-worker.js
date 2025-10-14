@@ -82,8 +82,13 @@ self.addEventListener("message", async (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const url = event.notification?.data?.url;
+  let url = event.notification?.data?.url;
   if (!url) return;
+
+  // Forzar vista escritorio
+  if (!url.includes("desktop=1")) {
+    url += (url.includes("?") ? "&" : "?") + "desktop=1";
+  }
 
   event.waitUntil(
     (async () => {
@@ -99,6 +104,7 @@ self.addEventListener("notificationclick", (event) => {
     })()
   );
 });
+
 
 // ==== PERIODIC BACKGROUND SYNC ====
 self.addEventListener("periodicsync", async (event) => {
