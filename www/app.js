@@ -136,14 +136,14 @@ async function simpleHash(str) {
 }
 
 /*************************************************
- *  CHEQUEO DE CAMBIOS (CON MENSAJE TEMPORAL)
+ *  CHEQUEO DE CAMBIOS
  *************************************************/
 async function checkSource(src) {
   try {
     const sig = await getSignatureFromPage(src.url);
     const KEY = `lastSig:${src.key}`;
     const prev = localStorage.getItem(KEY);
-    if (prev && prev === sig) return false; // sin cambios
+    if (prev && prev === sig) return false;
     localStorage.setItem(KEY, sig);
     if (prev) {
       await notifyUnified({
@@ -162,14 +162,15 @@ async function checkSource(src) {
 
 async function checkAllSourcesForUpdates() {
   try {
-    // 🔔 Notificación temporal de revisión
-    await LocalNotifications.schedule({
-      notifications: [{
-        id: 9999, // ID fijo para la de revisión
-        title: "🔍 Revisando actualizaciones...",
-        body: "Verificando nuevas publicaciones...",
-      }]
-    });
+    if (isNative && LocalNotifications) {
+      await LocalNotifications.schedule({
+        notifications: [{
+          id: 9999,
+          title: "🔍 Revisando actualizaciones...",
+          body: "Verificando nuevas publicaciones...",
+        }]
+      });
+    }
 
     console.log("🕒 Revisando fuentes...");
     let huboCambios = false;
@@ -179,13 +180,7 @@ async function checkAllSourcesForUpdates() {
       if (r.value === true) huboCambios = true;
     }
 
-    // ⏳ Espera 3 segundos y borra la notificación temporal
-    setTimeout(async () => {
-      await LocalNotifications.cancel({ notifications: [{ id: 9999 }] });
-    }, 3000);
-
-    // Si no hubo cambios, muestra una notificación corta
-    if (!huboCambios) {
+    if (isNative && LocalNotifications && !huboCambios) {
       await LocalNotifications.schedule({
         notifications: [{
           id: 10000,
@@ -193,8 +188,6 @@ async function checkAllSourcesForUpdates() {
           body: "No se encontraron nuevas publicaciones.",
         }]
       });
-
-      // Cierra la de "sin novedades" a los 3 seg
       setTimeout(async () => {
         await LocalNotifications.cancel({ notifications: [{ id: 10000 }] });
       }, 3000);
@@ -206,9 +199,8 @@ async function checkAllSourcesForUpdates() {
   }
 }
 
-
 /*************************************************
- *  BACKGROUND FETCH (APP CERRADA)
+ *  BACKGROUND FETCH (APP CERRADA - APK)
  *************************************************/
 if (isNative && window.Capacitor.Plugins?.BackgroundFetch) {
   const { BackgroundFetch } = window.Capacitor.Plugins;
@@ -216,7 +208,7 @@ if (isNative && window.Capacitor.Plugins?.BackgroundFetch) {
     try {
       const status = await BackgroundFetch.configure(
         {
-          minimumFetchInterval: 15,
+          minimumFetchInterval: 15, // ✅ cada 15 minutos
           stopOnTerminate: false,
           startOnBoot: true,
           requiredNetworkType: 0,
@@ -240,7 +232,7 @@ if (isNative && window.Capacitor.Plugins?.BackgroundFetch) {
 }
 
 /*************************************************
- *  ARRANQUE (CADA 30 SEGUNDOS EN USO)
+ *  ARRANQUE Y PERIODIC BACKGROUND SYNC (WEB)
  *************************************************/
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("📱 App iniciada, solicitando permisos...");
@@ -252,16 +244,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   console.log("✅ Permiso concedido, iniciando chequeos...");
-  // Revisión inicial
   await checkAllSourcesForUpdates();
 
-  // Revisión cada 30 segundos
+  // Revisión cada 30 segundos mientras está abierta
   setInterval(async () => {
     console.log("⏱️ Disparando revisión periódica...");
     await checkAllSourcesForUpdates();
   }, 30 * 1000);
-});
 
+  // 🔁 Background sync (PWA cerrada)
+  if ("serviceWorker" in navigator && "PeriodicSyncManager" in self) {
+    navigator.serviceWorker.ready.then(async (reg) => {
+      try {
+        const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+        if (status.state === 'granted') {
+          await reg.periodicSync.register('check-updates', {
+            minInterval: 15 * 60 * 1000 // ✅ cada 15 minutos
+          });
+          console.log('✅ Periodic background sync (15 min) registrado');
+        } else {
+          console.warn('⚠️ No se otorgó permiso para background sync');
+        }
+      } catch (e) {
+        console.error('❌ Error registrando periodic sync:', e);
+      }
+    });
+  }
+});
 
 /*************************************************
  *  FUNCIONES DE PRUEBA
@@ -274,4 +283,3 @@ window.forzarCambio = (key = 'edictos') => {
 
 window.testNotify = () =>
   notifyUnified({ title: "Prueba", body: "Hola desde notifyUnified", url: "https://tulua.gov.co", tag: "demo" });
-//

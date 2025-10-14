@@ -1,7 +1,5 @@
 // ==== CACHE & OFFLINE ====
-// ⚠️ Sube la versión al cambiar HTML/CSS/JS
-const CACHE_NAME = "alcaldia-tulua-v6";
-
+const CACHE_NAME = "alcaldia-tulua-v9";
 const ASSETS = [
   "./",
   "./index.html",
@@ -11,13 +9,13 @@ const ASSETS = [
   "./logo.png",
 ];
 
-// Install: precache
+// ===== INSTALL =====
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
   self.skipWaiting();
 });
 
-// Activate: limpia cachés viejas
+// ===== ACTIVATE =====
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -27,12 +25,11 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Fetch
+// ===== FETCH =====
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
-  // 1) Navegación: NETWORK-FIRST
   if (req.mode === "navigate") {
     event.respondWith(
       (async () => {
@@ -50,7 +47,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 2) Resto: CACHE-FIRST con actualización
+  // Cache-first
   event.respondWith(
     (async () => {
       const cached = await caches.match(req);
@@ -69,7 +66,6 @@ self.addEventListener("fetch", (event) => {
 });
 
 // ==== NOTIFICACIONES ====
-// Mensaje desde la página para mostrar una notificación
 self.addEventListener("message", async (event) => {
   const data = event.data || {};
   if (data.type === "notify" && data.title && data.body) {
@@ -84,7 +80,6 @@ self.addEventListener("message", async (event) => {
   }
 });
 
-// Al tocar la notificación, abre el enlace
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   const url = event.notification?.data?.url;
@@ -93,18 +88,106 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil(
     (async () => {
       const allClients = await clients.matchAll({ type: "window", includeUncontrolled: true });
-      // Reusa una pestaña si existe
       for (const client of allClients) {
         try {
           await client.focus();
           await client.navigate(url);
           return;
-        } catch { /* no-op */ }
+        } catch {}
       }
-      // O abre una nueva
-      if (clients.openWindow) {
-        await clients.openWindow(url);
-      }
+      if (clients.openWindow) await clients.openWindow(url);
     })()
   );
 });
+
+// ==== PERIODIC BACKGROUND SYNC ====
+self.addEventListener("periodicsync", async (event) => {
+  if (event.tag === "check-updates") {
+    console.log("🔄 Ejecutando revisión en segundo plano (PWA)");
+    event.waitUntil(runBackgroundCheck());
+  }
+});
+
+// ==== FUNCIÓN PRINCIPAL DE REVISIÓN ====
+async function runBackgroundCheck() {
+  try {
+    // 🔔 Mostrar notificación “Revisando...”
+    await self.registration.showNotification("🔍 Revisando actualizaciones...", {
+      body: "Verificando nuevas publicaciones en el portal de la Alcaldía...",
+      icon: "logo.png",
+      badge: "logo.png",
+      silent: true,
+      tag: "revisando",
+      renotify: true,
+    });
+
+    // Revisar fuentes
+    const huboCambios = await checkForUpdatesSW();
+
+    // 🔕 Cerrar notificación “revisando”
+    const reviewing = await self.registration.getNotifications({ tag: "revisando" });
+    reviewing.forEach((n) => n.close());
+
+    // Si no hubo cambios, muestra “Sin novedades”
+    if (!huboCambios) {
+      await self.registration.showNotification("✅ Sin novedades", {
+        body: "No se encontraron nuevas publicaciones.",
+        icon: "logo.png",
+        badge: "logo.png",
+        tag: "sin-novedades",
+        silent: true,
+      });
+
+      // Se auto-cierra después de 3 segundos
+      setTimeout(async () => {
+        const notis = await self.registration.getNotifications({ tag: "sin-novedades" });
+        for (const n of notis) n.close();
+      }, 3000);
+    }
+  } catch (e) {
+    console.error("❌ Error en revisión background:", e);
+  }
+}
+
+// ==== FUNCIÓN QUE DETECTA CAMBIOS ====
+async function checkForUpdatesSW() {
+  let huboCambios = false;
+  const sources = [
+    { key: "edictos", url: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/", title: "Nuevos edictos", open: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/" },
+    { key: "noticias", url: "https://tulua.gov.co/publicaciones/noticias/?tema=8", title: "Nuevas noticias", open: "https://tulua.gov.co/publicaciones/noticias/?tema=8" },
+    { key: "decretos", url: "https://tulua.gov.co/documentos/795/decretos/", title: "Nuevos decretos", open: "https://tulua.gov.co/documentos/795/decretos/" },
+    { key: "resoluciones", url: "https://tulua.gov.co/documentos/796/resoluciones/", title: "Nuevas resoluciones", open: "https://tulua.gov.co/documentos/796/resoluciones/" },
+    { key: "acuerdos", url: "https://tulua.gov.co/documentos/794/acuerdos/", title: "Nuevos acuerdos", open: "https://tulua.gov.co/documentos/794/acuerdos/" },
+  ];
+
+  for (const src of sources) {
+    try {
+      const res = await fetch(src.url, { cache: "no-store" });
+      const text = await res.text();
+      const hashBuffer = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(text.slice(0, 4000)));
+      const sig = Array.from(new Uint8Array(hashBuffer))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+
+      const key = `lastSig:${src.key}`;
+      const prev = (await self.registration.storage?.getItem?.(key)) || null;
+
+      if (prev && prev !== sig) {
+        huboCambios = true;
+        console.log(`📢 Cambio detectado en ${src.key}`);
+        await self.registration.showNotification(src.title, {
+          body: "Se publicaron actualizaciones. Tócalo para ver.",
+          icon: "logo.png",
+          badge: "logo.png",
+          data: { url: src.open },
+        });
+      }
+
+      self.registration.storage?.setItem?.(key, sig);
+    } catch (e) {
+      console.warn("⚠️ Error revisando", src.key, e);
+    }
+  }
+
+  return huboCambios;
+}
