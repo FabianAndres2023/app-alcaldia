@@ -109,3 +109,23 @@ app/src/main/res/xml/config.xml
 !app/src/main/res/
 !app/src/main/res/xml/
 !app/src/main/res/xml/config.xml
+
+
+# Copied web assets
+app/src/main/assets/public
+
+# Generated Config files
+app/src/main/assets/capacitor.config.json
+app/src/main/assets/capacitor.plugins.json
+app/src/main/res/xml/config.xml
+
+# --- allow committing Capacitor generated assets/config ---
+!app/src/main/assets/
+!app/src/main/assets/public/**
+!app/src/main/assets/capacitor.config.json
+!app/src/main/assets/capacitor.plugins.json
+
+!app/src/main/res/
+!app/src/main/res/xml/
+!app/src/main/res/xml/config.xml
+!app/src/main/res/xml/file_paths.xml
