@@ -203,17 +203,9 @@ async function checkSource(src) {
 
 async function checkAllSourcesForUpdates() {
   try {
-    if (isNative && LocalNotifications) {
-      await LocalNotifications.schedule({
-        notifications: [{
-          id: 9999,
-          title: "🔍 Revisando actualizaciones...",
-          body: "Verificando nuevas publicaciones...",
-        }]
-      });
-    }
+    // 👇 Solo muestra mensaje en consola, sin notificar
+    console.log("🔍 [Interno] Revisando actualizaciones...");
 
-    console.log("🕒 Revisando fuentes...");
     let huboCambios = false;
 
     const resultados = await Promise.allSettled(SOURCES.map(checkSource));
@@ -221,17 +213,8 @@ async function checkAllSourcesForUpdates() {
       if (r.value === true) huboCambios = true;
     }
 
-    if (isNative && LocalNotifications && !huboCambios) {
-      await LocalNotifications.schedule({
-        notifications: [{
-          id: 10000,
-          title: "✅ Sin novedades",
-          body: "No se encontraron nuevas publicaciones.",
-        }]
-      });
-      setTimeout(async () => {
-        await LocalNotifications.cancel({ notifications: [{ id: 10000 }] });
-      }, 3000);
+    if (!huboCambios) {
+      console.log("✅ [Interno] Sin novedades — No se encontraron nuevas publicaciones.");
     }
 
     console.log(huboCambios ? "📢 Hay cambios nuevos" : "🟢 Sin novedades");
@@ -240,23 +223,40 @@ async function checkAllSourcesForUpdates() {
   }
 }
 
+
+
 /*************************************************
  *  BACKGROUND FETCH (APP CERRADA - APK)
  *************************************************/
 if (isNative && window.Capacitor.Plugins?.BackgroundFetch) {
-  const { BackgroundFetch } = window.Capacitor.Plugins;
+  const { BackgroundFetch, LocalNotifications } = window.Capacitor.Plugins;
+
   async function setupBackgroundFetch() {
     try {
       const status = await BackgroundFetch.configure(
         {
-          minimumFetchInterval: 15, // ✅ cada 15 minutos
-          stopOnTerminate: false,
-          startOnBoot: true,
-          requiredNetworkType: 0,
+          minimumFetchInterval: 15, // cada 15 minutos
+          stopOnTerminate: false,   // ❗ sigue funcionando si cierras la app
+          startOnBoot: true,        // ✅ arranca con el dispositivo
+          enableHeadless: true,     // 🔥 permite ejecución en modo cerrado total
+          requiredNetworkType: 0,   // cualquier red
         },
         async (taskId) => {
           console.log('🔁 BackgroundFetch ejecutado:', taskId);
-          await checkAllSourcesForUpdates();
+
+          // ejecuta la verificación en segundo plano
+          const huboCambios = await checkAllSourcesForUpdates();
+
+          if (huboCambios) {
+            await LocalNotifications.schedule({
+              notifications: [{
+                id: Math.floor(Math.random() * 1e6),
+                title: "📢 Nueva publicación detectada",
+                body: "Se publicó un nuevo documento.",
+              }]
+            });
+          }
+
           await BackgroundFetch.finish(taskId);
         },
         async (taskId) => {
@@ -264,13 +264,21 @@ if (isNative && window.Capacitor.Plugins?.BackgroundFetch) {
           await BackgroundFetch.finish(taskId);
         }
       );
+
       console.log('✅ BackgroundFetch configurado correctamente:', status);
+
+      // 🔄 Inicia de inmediato
+      const isRunning = await BackgroundFetch.start();
+      console.log('🚀 BackgroundFetch iniciado:', isRunning);
     } catch (e) {
       console.error('❌ Error iniciando BackgroundFetch:', e);
     }
   }
+
+  // Ejecuta en nativo (capacitor ready)
   document.addEventListener('deviceready', setupBackgroundFetch, false);
 }
+
 
 /*************************************************
  *  ARRANQUE Y PERIODIC BACKGROUND SYNC (WEB)

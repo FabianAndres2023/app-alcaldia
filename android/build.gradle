@@ -4,6 +4,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        jcenter() // opcional, ayuda con librerías antiguas
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.2'
@@ -15,13 +16,14 @@ buildscript {
 
 apply from: "variables.gradle"
 
-// ❌ Elimina por completo este bloque (causa el error):
-// allprojects {
-//     repositories {
-//         google()
-//         mavenCentral()
-//     }
-// }
+// ✅ AGREGA ESTO (es fundamental para que todas las libs se descarguen bien)
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter() // opcional
+    }
+}
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
