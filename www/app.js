@@ -203,17 +203,9 @@ async function checkSource(src) {
 
 async function checkAllSourcesForUpdates() {
   try {
-    if (isNative && LocalNotifications) {
-      await LocalNotifications.schedule({
-        notifications: [{
-          id: 9999,
-          title: "🔍 Revisando actualizaciones...",
-          body: "Verificando nuevas publicaciones...",
-        }]
-      });
-    }
+    // 👇 Solo muestra mensaje en consola, sin notificar
+    console.log("🔍 [Interno] Revisando actualizaciones...");
 
-    console.log("🕒 Revisando fuentes...");
     let huboCambios = false;
 
     const resultados = await Promise.allSettled(SOURCES.map(checkSource));
@@ -221,17 +213,8 @@ async function checkAllSourcesForUpdates() {
       if (r.value === true) huboCambios = true;
     }
 
-    if (isNative && LocalNotifications && !huboCambios) {
-      await LocalNotifications.schedule({
-        notifications: [{
-          id: 10000,
-          title: "✅ Sin novedades",
-          body: "No se encontraron nuevas publicaciones.",
-        }]
-      });
-      setTimeout(async () => {
-        await LocalNotifications.cancel({ notifications: [{ id: 10000 }] });
-      }, 3000);
+    if (!huboCambios) {
+      console.log("✅ [Interno] Sin novedades — No se encontraron nuevas publicaciones.");
     }
 
     console.log(huboCambios ? "📢 Hay cambios nuevos" : "🟢 Sin novedades");
@@ -239,6 +222,8 @@ async function checkAllSourcesForUpdates() {
     console.error("❌ Error al revisar fuentes:", e);
   }
 }
+
+
 
 /*************************************************
  *  BACKGROUND FETCH (APP CERRADA - APK)
