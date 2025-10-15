@@ -2,6 +2,7 @@ pluginManagement {
   repositories {
     google()
     mavenCentral()
+    maven { url 'https://maven.transistorsoft.com' }  // 👈 AÑADE ESTO
     gradlePluginPortal()
   }
 }
@@ -12,6 +13,7 @@ dependencyResolutionManagement {
   repositories {
     google()
     mavenCentral()
+    maven { url 'https://maven.transistorsoft.com' }  // 👈 AÑADE ESTO
   }
 }
 

@@ -112,12 +112,14 @@ function swNotify({ title, body, url, tag }) {
  *  FUENTES A MONITOREAR
  *************************************************/
 const SOURCES = [
-  { key: "edictos", url: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/", title: "Nuevos edictos", open: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/" },
-  { key: "noticias", url: "https://tulua.gov.co/publicaciones/noticias/?tema=8", title: "Nuevas noticias", open: "https://tulua.gov.co/publicaciones/noticias/?tema=8" },
-  { key: "decretos", url: "https://tulua.gov.co/documentos/795/decretos/", title: "Nuevos decretos", open: "https://tulua.gov.co/documentos/795/decretos/" },
-  { key: "resoluciones", url: "https://tulua.gov.co/documentos/796/resoluciones/", title: "Nuevas resoluciones", open: "https://tulua.gov.co/documentos/796/resoluciones/" },
-  { key: "acuerdos", url: "https://tulua.gov.co/documentos/794/acuerdos/", title: "Nuevos acuerdos", open: "https://tulua.gov.co/documentos/794/acuerdos/" },
+  { key: "edictos",      url: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/", title: "Nuevos edictos",      open: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/" },
+  { key: "decretos",     url: "https://tulua.gov.co/documentos/795/decretos/",               title: "Nuevos decretos",     open: "https://tulua.gov.co/documentos/795/decretos/" },
+  { key: "resoluciones", url: "https://tulua.gov.co/documentos/796/resoluciones/",           title: "Nuevas resoluciones", open: "https://tulua.gov.co/documentos/796/resoluciones/" },
+  { key: "acuerdos",     url: "https://tulua.gov.co/documentos/794/acuerdos/",               title: "Nuevos acuerdos",     open: "https://tulua.gov.co/documentos/794/acuerdos/" },
+  { key: "noticias",     url: "https://tulua.gov.co/publicaciones/noticias/?tema=8",         title: "Nuevas noticias",     open: "https://tulua.gov.co/publicaciones/noticias/?tema=8" },
 ];
+
+
 
 /*************************************************
  *  LECTURA Y FIRMA DE PÁGINAS
@@ -127,14 +129,7 @@ async function fetchHTML(url) {
   return await r.text();
 }
 
-async function getSignatureFromPage(url) {
-  const text = await fetchHTML(url);
-  const dateMatch = text.match(/(\d{4}[-/]\d{2}[-/]\d{2}|\b\d{1,2}[-/]\d{1,2}[-/]\d{2,4}\b)/);
-  const datePart = dateMatch ? dateMatch[0] : "";
-  const firstLink = (text.match(/href="([^"]+)"/i) || [, ""])[1];
-  const hash = await simpleHash(text.slice(0, 6000));
-  return `${datePart}|${firstLink}|${hash}`;
-}
+
 
 async function simpleHash(str) {
   const enc = new TextEncoder();
@@ -145,27 +140,66 @@ async function simpleHash(str) {
 /*************************************************
  *  CHEQUEO DE CAMBIOS
  *************************************************/
+
+// 🔧 Dirección del proxy FastAPI en tu servidor IIS o PC
+const PROXY_BASE = "https://lunately-cryptogamic-alberta.ngrok-free.dev";
+
+async function getDocListSignature(src) {
+  try {
+    console.log("🌍 Analizando vía proxy:", src.url);
+    const apiUrl = `${PROXY_BASE}/check_docs?url=${encodeURIComponent(src.url)}`;
+    const data = await httpGetJson(apiUrl);
+
+    console.log(`🧩 Proxy detectó ${data.count} documentos en ${src.key}`);
+    return { hash: data.hash || "", links: Array.isArray(data.links) ? data.links : [] };
+  } catch (e) {
+    console.error("❌ Error en getDocListSignature (proxy):", e);
+    return { hash: "", links: [] };
+  }
+}
+
+
 async function checkSource(src) {
   try {
-    const sig = await getSignatureFromPage(src.url);
-    const KEY = `lastSig:${src.key}`;
-    const prev = localStorage.getItem(KEY);
-    if (prev && prev === sig) return false;
-    localStorage.setItem(KEY, sig);
-    if (prev) {
-      await notifyUnified({
-        title: src.title,
-        body: "Se publicaron actualizaciones. Tócalo para ver.",
-        url: src.open,
-        tag: `tag-${src.key}`,
-      });
-      return true;
+    const KEY_HASH = `lastDocHash:${src.key}`;
+    const KEY_SEEN = `seenDocs:${src.key}`;
+
+    const { hash, links } = await getDocListSignature(src);
+    const prevHash = localStorage.getItem(KEY_HASH);
+
+    // Si nunca se ha guardado un hash previo, guarda y no notifica
+    if (!prevHash) {
+      localStorage.setItem(KEY_HASH, hash);
+      writeSeen(KEY_SEEN, links);
+      console.log(`🆕 Inicializando fuente: ${src.key}`);
+      return false;
+    }
+
+    // Si el hash cambió, revisa si hay nuevos enlaces
+    if (prevHash !== hash) {
+      const prevSeen = new Set(readSeen(KEY_SEEN));
+      const nuevos = links.filter(u => !prevSeen.has(u));
+
+      localStorage.setItem(KEY_HASH, hash);
+      writeSeen(KEY_SEEN, links);
+
+      if (nuevos.length > 0) {
+        console.log(`📢 Cambio detectado en ${src.key}: ${nuevos.length} nuevos documentos`);
+        await notifyUnified({
+          title: src.title,
+          body: "Se publicó un nuevo documento. Tócalo para abrir.",
+          url: src.open,
+          tag: `tag-${src.key}`,
+        });
+        return true;
+      }
     }
   } catch (err) {
     console.warn(`[checkSource] Error en ${src.key}:`, err);
   }
   return false;
 }
+
 
 async function checkAllSourcesForUpdates() {
   try {
@@ -242,6 +276,12 @@ if (isNative && window.Capacitor.Plugins?.BackgroundFetch) {
  *  ARRANQUE Y PERIODIC BACKGROUND SYNC (WEB)
  *************************************************/
 document.addEventListener("DOMContentLoaded", async () => {
+  // Aviso cuando estás sirviendo por HTTP en red local (SW y CORS no funcionarán bien)
+  const onHttpLan = location.protocol === 'http:' && !location.hostname.includes('localhost');
+  if (!isNative && onHttpLan) {
+    console.warn('⚠️ Estás en HTTP sobre red local: el Service Worker requiere HTTPS/localhost y el fetch a dominios externos puede fallar por CORS.');
+  }
+
   console.log("📱 App iniciada, solicitando permisos...");
   const granted = await ensureNotificationPermission();
 
@@ -253,31 +293,60 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ Permiso concedido, iniciando chequeos...");
   await checkAllSourcesForUpdates();
 
-  // Revisión cada 30 segundos mientras está abierta
+  // Revisión periódica mientras está abierta
+  const intervalMs = isNative ? 30 * 1000 : 60 * 1000; // 30s en nativo, 60s en web
   setInterval(async () => {
     console.log("⏱️ Disparando revisión periódica...");
     await checkAllSourcesForUpdates();
-  }, 30 * 1000);
+  }, intervalMs);
 
   // 🔁 Background sync (PWA cerrada)
-  if ("serviceWorker" in navigator && "PeriodicSyncManager" in self) {
-    navigator.serviceWorker.ready.then(async (reg) => {
-      try {
-        const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
-        if (status.state === 'granted') {
-          await reg.periodicSync.register('check-updates', {
-            minInterval: 15 * 60 * 1000 // ✅ cada 15 minutos
-          });
-          console.log('✅ Periodic background sync (15 min) registrado');
-        } else {
-          console.warn('⚠️ No se otorgó permiso para background sync');
+  if ("serviceWorker" in navigator) {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+
+      // Preferimos la detección directa en el registro del SW
+      if ('periodicSync' in reg) {
+        try {
+          const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+          if (status.state === 'granted') {
+            await reg.periodicSync.register('check-updates', {
+              minInterval: 15 * 60 * 1000 // ✅ cada 15 minutos
+            });
+            console.log('✅ Periodic background sync (15 min) registrado');
+          } else {
+            console.warn('⚠️ No se otorgó permiso para background sync');
+          }
+        } catch (e) {
+          console.error('❌ Error registrando periodic sync (reg.periodicSync):', e);
         }
-      } catch (e) {
-        console.error('❌ Error registrando periodic sync:', e);
       }
-    });
+      // Compatibilidad con la verificación antigua
+      else if ("PeriodicSyncManager" in self) {
+        try {
+          const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
+          if (status.state === 'granted') {
+            await reg.periodicSync.register('check-updates', {
+              minInterval: 15 * 60 * 1000
+            });
+            console.log('✅ Periodic background sync (15 min) registrado [fallback]');
+          } else {
+            console.warn('⚠️ No se otorgó permiso para background sync [fallback]');
+          }
+        } catch (e) {
+          console.error('❌ Error registrando periodic sync [fallback]:', e);
+        }
+      } else {
+        console.warn('ℹ️ periodicSync no está disponible en este navegador/entorno.');
+      }
+    } catch (e) {
+      console.error('❌ Error obteniendo serviceWorker.ready:', e);
+    }
+  } else {
+    console.warn('ℹ️ Service Worker no disponible en este entorno.');
   }
 });
+
 
 /*************************************************
  *  FUNCIONES DE PRUEBA
@@ -309,3 +378,94 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+
+
+/*************************************************
+ *  UTIL: HTTP con bypass CORS en nativo (Capacitor 5)
+ *************************************************/
+const cap = window.Capacitor || {};
+const Plugins = cap.Plugins || {};
+
+// Capacitor 5 expone el HTTP oficial así (según build):
+// - Plugins.CapacitorHttp  (común)
+// - ó cap.CapacitorHttp    (algunas integraciones)
+const CapHttp = Plugins.CapacitorHttp || cap.CapacitorHttp || null;
+
+async function httpGetText(url) {
+  // Nativo → usa HTTP oficial (sin CORS)
+  if (isNative && CapHttp) {
+    try {
+      const res = await CapHttp.get({ url, connectTimeout: 15000, readTimeout: 15000 });
+      return typeof res.data === 'string' ? res.data : JSON.stringify(res.data);
+    } catch (e) {
+      console.warn('[HTTP Native] Error:', e);
+      throw e;
+    }
+  }
+  // Web → fetch normal (sujeto a CORS)
+  const r = await fetch(url, { cache: 'no-store', mode: 'cors' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return await r.text();
+}
+
+async function httpGetJson(url) {
+  if (isNative && CapHttp) {
+    const res = await CapHttp.get({ url, connectTimeout: 15000, readTimeout: 15000 });
+    return typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+  } else {
+    const r = await fetch(url, { mode: 'cors', cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  }
+}
+
+
+/*************************************************
+ *  PARSEO: extraer enlaces a documentos (mejorado)
+ *************************************************/
+const DOC_EXT_RE = /\.(pdf|doc|docx|xls|xlsx)(\?|#|$)/i;
+
+function absolutize(href, base) {
+  try { return new URL(href, base).href; } catch { return href; }
+}
+
+function parseDocLinksFromHTML(html, baseUrl) {
+  const docs = new Set();
+
+  // 1️⃣ Buscar href, data-file o src con extensión de documento
+  const matches = html.matchAll(/(?:href|data-file|src)\s*=\s*["']([^"']+\.(pdf|docx?|xlsx?))["']/gi);
+  for (const m of matches) {
+    const abs = absolutize(m[1], baseUrl);
+    docs.add(abs);
+  }
+
+  // 2️⃣ Buscar URLs embebidas dentro de scripts o JSON
+  const jsonMatches = html.matchAll(/https?:\/\/[^\s"'<>]+\.(pdf|docx?|xlsx?)/gi);
+  for (const m of jsonMatches) {
+    docs.add(m[0]);
+  }
+
+  // 3️⃣ Si hay PDFs relativos, convertirlos con base
+  const relMatches = html.matchAll(/["']([^"']+\/[^"']+\.(pdf|docx?|xlsx?))["']/gi);
+  for (const m of relMatches) {
+    const abs = absolutize(m[1], baseUrl);
+    docs.add(abs);
+  }
+
+  const arr = Array.from(docs).slice(0, 50);
+  console.log(`🧩 Detectados ${arr.length} documentos en ${baseUrl}`);
+  return arr;
+}
+
+
+/*************************************************
+ *  STORAGE helper (clave por fuente)
+ *************************************************/
+function readSeen(key) {
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+}
+function writeSeen(key, arr) {
+  try { localStorage.setItem(key, JSON.stringify(arr)); } catch {}
+}
+
