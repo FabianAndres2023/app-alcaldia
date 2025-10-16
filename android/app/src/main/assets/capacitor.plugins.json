@@ -1,5 +1,9 @@
 [
 	{
+		"pkg": "@capacitor-firebase/messaging",
+		"classpath": "io.capawesome.capacitorjs.plugins.firebase.messaging.FirebaseMessagingPlugin"
+	},
+	{
 		"pkg": "@capacitor/local-notifications",
 		"classpath": "com.capacitorjs.plugins.localnotifications.LocalNotificationsPlugin"
 	}

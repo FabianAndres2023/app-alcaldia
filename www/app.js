@@ -6,6 +6,46 @@ const isNative = !!window.Capacitor && (
   (window.Capacitor.getPlatform && window.Capacitor.getPlatform() !== 'web')
 );
 
+
+/*************************************************
+ *  FIREBASE MESSAGING (PUSH)
+ *************************************************/
+let FirebaseMessaging = null;
+
+if (isNative && window.Capacitor?.Plugins) {
+  FirebaseMessaging = window.Capacitor.Plugins.FirebaseMessaging;
+}
+
+async function initFirebasePush() {
+  try {
+    if (!FirebaseMessaging) {
+      console.warn("⚠️ FirebaseMessaging plugin no disponible.");
+      return;
+    }
+
+    // 1️⃣ Pedir permisos
+    const permStatus = await FirebaseMessaging.requestPermissions();
+    console.log("📱 Permisos push:", permStatus);
+
+    // 2️⃣ Obtener token
+    const token = await FirebaseMessaging.getToken();
+    console.log("🔥 TOKEN FCM:", token.token);
+    // alert("TOKEN FCM:\n" + token.token);
+
+    // 3️⃣ Escuchar notificaciones en primer plano
+    FirebaseMessaging.addListener("messageReceived", (msg) => {
+      console.log("📩 Notificación recibida:", msg);
+      const title = msg.notification?.title || "Notificación";
+      const body = msg.notification?.body || "Mensaje recibido";
+      notifyUnified({ title, body });
+    });
+  } catch (err) {
+    console.error("❌ Error iniciando FirebaseMessaging:", err);
+  }
+}
+
+
+
 let LocalNotifications = isNative ? (window.Capacitor.Plugins?.LocalNotifications || null) : null;
 
 /*************************************************
@@ -284,6 +324,8 @@ if (isNative && window.Capacitor.Plugins?.BackgroundFetch) {
  *  ARRANQUE Y PERIODIC BACKGROUND SYNC (WEB)
  *************************************************/
 document.addEventListener("DOMContentLoaded", async () => {
+
+
   // Aviso cuando estás sirviendo por HTTP en red local (SW y CORS no funcionarán bien)
   const onHttpLan = location.protocol === 'http:' && !location.hostname.includes('localhost');
   if (!isNative && onHttpLan) {
@@ -291,6 +333,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   console.log("📱 App iniciada, solicitando permisos...");
+
+  await initFirebasePush();
+
   const granted = await ensureNotificationPermission();
 
   if (!granted) {
