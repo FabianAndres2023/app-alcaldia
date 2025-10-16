@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="gov.tulua.app">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permisos -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,8 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">  <!-- 🔥 ESTA ES LA LÍNEA CLAVE -->
+        android:usesCleartextTraffic="true">
 
+        <!-- Actividad principal -->
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation"
             android:name=".MainActivity"
@@ -28,6 +29,7 @@
             </intent-filter>
         </activity>
 
+        <!-- FileProvider para descargas -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -38,14 +40,35 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-
+        <!-- 🔥 Servicio que recibe mensajes FCM -->
         <service
             android:name=".MyFirebaseMessagingService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <!-- ✅ Servicio base necesario para obtener el token -->
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="true"
+            tools:replace="android:exported">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- ⚙️ Permite recibir notificaciones al reiniciar el dispositivo -->
+        <receiver
+            android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
