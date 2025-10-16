@@ -30,7 +30,11 @@ async function initFirebasePush() {
     // 2️⃣ Obtener token
     const token = await FirebaseMessaging.getToken();
     console.log("🔥 TOKEN FCM:", token.token);
-    alert("TOKEN FCM:\n" + token.token);
+    await fetch(`${PROXY_BASE}/register_token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: token.token })
+    });
 
     // 3️⃣ Escuchar notificaciones en primer plano
     FirebaseMessaging.addListener("messageReceived", (msg) => {
