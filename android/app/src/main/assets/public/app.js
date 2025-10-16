@@ -43,6 +43,23 @@ async function initFirebasePush() {
       const body = msg.notification?.body || "Mensaje recibido";
       notifyUnified({ title, body });
     });
+
+    // 🔥 Detectar notificación cuando la app se abre desde el cierre total
+FirebaseMessaging.addListener('notificationActionPerformed', (notification) => {
+  try {
+    const data = notification?.notification?.data;
+    const url = data?.url || null;
+    console.log('👉 Notificación abierta desde background:', data);
+    if (url) {
+      window.open(url, '_system'); // abre en navegador externo
+      // o usa location.href = url; si quieres dentro de la app
+    }
+  } catch (e) {
+    console.error('❌ Error al abrir notificación:', e);
+  }
+});
+
+
   } catch (err) {
     console.error("❌ Error iniciando FirebaseMessaging:", err);
   }
