@@ -65,10 +65,15 @@
         <span class="label">PQRSDF</span>
       </button>
 
-      <!-- NUEVO BOTÓN AGREGADO -->
       <a class="card small-card link-card" href="https://tulua.gov.co/calendario/" target="_blank">
         <span class="icon">🎉</span>
         <span class="label">¿QUÉ HAY PARA HACER?</span>
+      </a>
+
+      <!-- 🆕 NUEVO BOTÓN -->
+      <a class="card small-card link-card" href="https://tulua.gov.co/turismo/" target="_blank">
+        <span class="icon">📍</span>
+        <span class="label">¿QUÉ HAY PARA VISITAR?</span>
       </a>
     </div>
 
@@ -106,7 +111,6 @@
   <script src="app.js" defer></script>
 
   <script>
-    // Registro del Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
         .then(() => console.log("✅ Service Worker registrado"))
