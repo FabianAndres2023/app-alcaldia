@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Alcaldía de Tuluá</title>
 
-  <!-- Colores del navegador / Splash -->
   <meta name="theme-color" content="#005BBB" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -65,10 +64,14 @@
         <span class="label">PQRSDF</span>
       </button>
 
-      <!-- NUEVO BOTÓN AGREGADO -->
       <a class="card small-card link-card" href="https://tulua.gov.co/calendario/" target="_blank">
         <span class="icon">🎉</span>
         <span class="label">¿QUÉ HAY PARA HACER?</span>
+      </a>
+
+      <a class="card small-card link-card" href="https://tulua.gov.co/turismo/" target="_blank">
+        <span class="icon">📍</span>
+        <span class="label">¿QUÉ HAY PARA VISITAR?</span>
       </a>
     </div>
 
@@ -106,7 +109,6 @@
   <script src="app.js" defer></script>
 
   <script>
-    // Registro del Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
         .then(() => console.log("✅ Service Worker registrado"))
