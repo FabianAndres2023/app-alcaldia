@@ -1,4 +1,4 @@
-package gov.tulua.app;
+package tulua.app;
 
 import android.os.Bundle;
 import android.os.Handler;

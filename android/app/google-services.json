@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:83265808673:android:30e549ab057b1d8adbf660",
         "android_client_info": {
-          "package_name": "com.alcaldia.app"
+          "package_name": "tulua.app"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:83265808673:android:527f5c4a5ef3634ddbf660",
         "android_client_info": {
-          "package_name": "gov.tulua.app"
+          "package_name": "tulua.app"
         }
       },
       "oauth_client": [],
