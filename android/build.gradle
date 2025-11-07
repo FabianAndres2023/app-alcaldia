@@ -8,13 +8,13 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.7.2'
-        classpath 'com.google.gms:google-services:4.4.2'  // ✅ Necesario para Firebase
+        classpath 'com.google.gms:google-services:4.4.4'  // ✅ Última versión de Firebase
     }
 }
 
 apply from: "variables.gradle"
 
-// ✅ Esto es importante: garantiza que todas las libs (Firebase, AndroidX, etc.) se resuelvan correctamente
+// ✅ Garantiza que todas las dependencias (Firebase, AndroidX, etc.) se resuelvan correctamente
 allprojects {
     repositories {
         google()

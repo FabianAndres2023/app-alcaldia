@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'  // ✅ Importante: activa Firebase en este módulo
+apply plugin: 'com.google.gms.google-services'  // ✅ Activa Firebase en este módulo
 
 android {
     namespace "tulua.app"
@@ -19,7 +19,6 @@ android {
         }
     }
 
-    // 🔐 Configuración de firma para el modo Release
     signingConfigs {
         release {
             storeFile file("my-release-key.keystore")
@@ -58,8 +57,11 @@ dependencies {
 
     implementation project(':capacitor-android')
 
-    // ✅ Firebase Messaging para Push Notifications
-    implementation 'com.google.firebase:firebase-messaging:23.4.1'
+    // ✅ Firebase BoM: mantiene compatibilidad entre SDKs
+    implementation platform('com.google.firebase:firebase-bom:34.5.0')
+
+    // ✅ Firebase Messaging (Push Notifications)
+    implementation 'com.google.firebase:firebase-messaging'
 
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
@@ -68,7 +70,7 @@ dependencies {
 
 apply from: 'capacitor.build.gradle'
 
-// ✅ Verifica existencia de google-services.json para no romper el build
+// ✅ Verifica existencia de google-services.json
 try {
     def servicesJSON = file('google-services.json')
     if (servicesJSON.text) {
