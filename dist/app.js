@@ -1,15 +1,28 @@
-// Exponer goTo en el scope global para que funcione el onclick del HTML
+// Cambiar entre pantallas
 window.goTo = function (id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+
   const target = document.getElementById(id);
-  if (target) target.classList.add("active");
+  if (target) {
+    target.classList.add("active");
+  }
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
-// Si se activa un SW nuevo, recarga para tomar la última versión de index.html
+// Botones con data-target
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-target]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.getAttribute("data-target");
+      window.goTo(target);
+    });
+  });
+});
+
+// Si se activa un SW nuevo, recarga para tomar la última versión
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    // Evita bucles de recarga
     if (!window.__reloadedBySW) {
       window.__reloadedBySW = true;
       window.location.reload();
