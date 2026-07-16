@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@capacitor-firebase/messaging": "^5.1.0",
+    "@capacitor/ios": "^5.7.8",
     "@capacitor/local-notifications": "^5.0.6",
     "cordova-plugin-background-fetch": "^7.2.4"
   }
