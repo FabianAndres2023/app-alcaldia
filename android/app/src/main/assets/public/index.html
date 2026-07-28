@@ -2,13 +2,24 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+
   <title>Alcaldía de Tuluá</title>
 
   <meta name="theme-color" content="#005BBB" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Alcaldía de Tuluá" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  />
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Alcaldía de Tuluá"
+  />
 
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="logo.png" />
@@ -18,102 +29,258 @@
 </head>
 
 <body>
-  <!-- ========== PANTALLA DE BIENVENIDA ========== -->
-  <section id="welcome" class="screen active">
-    <div class="hero">
-      <h1>¡Bienvenido!</h1>
-    </div>
+  <main class="app-container">
 
-    <div class="logo-card">
-      <img src="logo.png" alt="Logo Alcaldía de Tuluá" class="welcome-logo" />
-    </div>
+    <!-- ========== PANTALLA DE BIENVENIDA ========== -->
+    <section
+      id="welcome"
+      class="screen active"
+      aria-labelledby="welcome-title"
+    >
+      <div class="hero">
+        <h1 id="welcome-title">¡Bienvenido!</h1>
+      </div>
 
-    <button class="btn-ingresar" data-target="menu">INGRESAR</button>
+      <div class="logo-card">
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="welcome-logo"
+        />
+      </div>
 
-    <div class="social">
-      <a href="https://www.facebook.com/AlcaldiaDeTulua" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook"></a>
-      <a href="https://x.com/alcaldiadetulua" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="X"></a>
-      <a href="https://www.youtube.com/channel/UCGLrd7LLrcksp04eJEfMdgQ/featured" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg" alt="YouTube"></a>
-      <a href="https://www.instagram.com/alcaldiadetulua/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram"></a>
-      <a href="https://tulua.gov.co/" target="_blank"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlechrome.svg" alt="Sitio Web"></a>
-    </div>
-
-    <footer>
-      <p>Copyright 2025 - Todos los derechos reservados</p>
-    </footer>
-
-    <div class="bottom-curve"></div>
-  </section>
-
-  <!-- ========== MENÚ PRINCIPAL ========== -->
-  <section id="menu" class="screen">
-    <header class="menu-hero">
-      <h2>Alcaldía de Tuluá</h2>
-      <p>¡Bienvenido a la aplicación de Trámites de la Alcaldía municipal!</p>
-      <img src="logo.png" alt="Logo" class="header-logo">
-    </header>
-
-    <div class="card-grid small-grid">
-      <a class="card small-card link-card" href="https://portal-tulua.softwaretributario.com/" target="_blank">
-        <span class="icon">📄</span>
-        <span class="label">PAGOS EN LÍNEA</span>
-      </a>
-
-      <button class="card small-card" data-target="pqrs">
-        <span class="icon">💬</span>
-        <span class="label">PQRSDF</span>
+      <button
+        type="button"
+        class="btn-ingresar"
+        data-target="menu"
+      >
+        INGRESAR
       </button>
 
-      <a class="card small-card link-card" href="https://tulua.gov.co/calendario/" target="_blank">
-        <span class="icon">🎉</span>
-        <span class="label">¿QUÉ HAY PARA HACER?</span>
-      </a>
+      <nav
+        class="social"
+        aria-label="Redes sociales de la Alcaldía de Tuluá"
+      >
+        <a
+          href="https://www.facebook.com/AlcaldiaDeTulua"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir Facebook"
+        >
+          <img
+            src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg"
+            alt=""
+          />
+        </a>
 
-      <a class="card small-card link-card" href="https://tulua.gov.co/turismo/" target="_blank">
-        <span class="icon">📍</span>
-        <span class="label">¿QUÉ HAY PARA VISITAR?</span>
-      </a>
-    </div>
+        <a
+          href="https://x.com/alcaldiadetulua"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir X"
+        >
+          <img
+            src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg"
+            alt=""
+          />
+        </a>
 
-    <button class="btn-ingresar" data-target="welcome">⬅️ Volver</button>
-  </section>
+        <a
+          href="https://www.youtube.com/channel/UCGLrd7LLrcksp04eJEfMdgQ/featured"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir YouTube"
+        >
+          <img
+            src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg"
+            alt=""
+          />
+        </a>
 
-  <!-- ========== PQRSDF ========== -->
-  <section id="pqrs" class="screen">
-    <header class="menu-hero">
-      <h2>PQRSDF</h2>
-      <p>Seleccione una opción:</p>
-      <img src="logo.png" alt="Logo" class="header-logo">
-    </header>
+        <a
+          href="https://www.instagram.com/alcaldiadetulua/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir Instagram"
+        >
+          <img
+            src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg"
+            alt=""
+          />
+        </a>
 
-    <div class="card-grid">
-      <a class="card link-card" href="https://tulua.tramiter.co/home/descripcion-tramites" target="_blank">
-        <span class="icon">ℹ️</span>
-        <span class="label">Información PQRSDF</span>
-      </a>
+        <a
+          href="https://tulua.gov.co/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir sitio web de la Alcaldía de Tuluá"
+        >
+          <img
+            src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlechrome.svg"
+            alt=""
+          />
+        </a>
+      </nav>
 
-      <a class="card link-card" href="https://tulua.tramiter.co/home" target="_blank">
-        <span class="icon">📝</span>
-        <span class="label">Registrar PQRSDF</span>
-      </a>
+      <footer>
+        <p>Copyright 2025 - Todos los derechos reservados</p>
+      </footer>
 
-      <a class="card link-card" href="https://tulua.tramiter.co/documentos/consultar-tramite-web" target="_blank">
-        <span class="icon">🔎</span>
-        <span class="label">Consultar Trámite</span>
-      </a>
-    </div>
+      <div class="bottom-curve" aria-hidden="true"></div>
+    </section>
 
-    <button class="btn-ingresar" data-target="menu">⬅️ Volver</button>
-  </section>
+    <!-- ========== MENÚ PRINCIPAL ========== -->
+    <section
+      id="menu"
+      class="screen"
+      aria-labelledby="menu-title"
+    >
+      <header class="menu-hero">
+        <div class="menu-copy">
+          <h2 id="menu-title">Alcaldía de Tuluá</h2>
+
+          <p>
+            ¡Bienvenido a la aplicación de trámites de la Alcaldía
+            Municipal!
+          </p>
+        </div>
+
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="header-logo"
+        />
+      </header>
+
+      <div class="card-grid small-grid">
+        <a
+          class="card small-card link-card"
+          href="https://portal-tulua.softwaretributario.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="icon" aria-hidden="true">📄</span>
+          <span class="label">PAGOS EN LÍNEA</span>
+        </a>
+
+        <button
+          type="button"
+          class="card small-card"
+          data-target="pqrs"
+        >
+          <span class="icon" aria-hidden="true">💬</span>
+          <span class="label">PQRSDF</span>
+        </button>
+
+        <a
+          class="card small-card link-card"
+          href="https://tulua.gov.co/calendario/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="icon" aria-hidden="true">🎉</span>
+          <span class="label">¿QUÉ HAY PARA HACER?</span>
+        </a>
+
+        <a
+          class="card small-card link-card"
+          href="https://tulua.gov.co/turismo/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="icon" aria-hidden="true">📍</span>
+          <span class="label">¿QUÉ HAY PARA VISITAR?</span>
+        </a>
+      </div>
+
+      <button
+        type="button"
+        class="btn-ingresar btn-volver"
+        data-target="welcome"
+      >
+        <span aria-hidden="true">⬅️</span>
+        Volver
+      </button>
+    </section>
+
+    <!-- ========== PQRSDF ========== -->
+    <section
+      id="pqrs"
+      class="screen"
+      aria-labelledby="pqrs-title"
+    >
+      <header class="menu-hero">
+        <div class="menu-copy">
+          <h2 id="pqrs-title">PQRSDF</h2>
+          <p>Seleccione una opción:</p>
+        </div>
+
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="header-logo"
+        />
+      </header>
+
+      <div class="card-grid pqrs-grid">
+        <a
+          class="card link-card"
+          href="https://tulua.tramiter.co/home/descripcion-tramites"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="icon" aria-hidden="true">ℹ️</span>
+          <span class="label">Información PQRSDF</span>
+        </a>
+
+        <a
+          class="card link-card"
+          href="https://tulua.tramiter.co/home"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="icon" aria-hidden="true">📝</span>
+          <span class="label">Registrar PQRSDF</span>
+        </a>
+
+        <a
+          class="card link-card"
+          href="https://tulua.tramiter.co/documentos/consultar-tramite-web"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="icon" aria-hidden="true">🔎</span>
+          <span class="label">Consultar trámite</span>
+        </a>
+      </div>
+
+      <button
+        type="button"
+        class="btn-ingresar btn-volver"
+        data-target="menu"
+      >
+        <span aria-hidden="true">⬅️</span>
+        Volver
+      </button>
+    </section>
+
+  </main>
 
   <script src="app.js" defer></script>
 
   <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js", { scope: "./" })
-        .then(() => console.log("✅ Service Worker registrado"))
-        .catch(err => console.error("❌ Error registrando SW:", err));
-    }
+    window.addEventListener("load", function () {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("./service-worker.js", { scope: "./" })
+          .then(function () {
+            console.log("Service Worker registrado");
+          })
+          .catch(function (error) {
+            console.error("Error registrando Service Worker:", error);
+          });
+      }
+    });
   </script>
 </body>
 </html>

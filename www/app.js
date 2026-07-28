@@ -1,545 +1,1336 @@
-/*************************************************
- *  DETECCIÓN PLATAFORMA + PERMISOS/NOTIFICACIONES
- *************************************************/
-const isNative = !!window.Capacitor && (
-  (window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) ||
-  (window.Capacitor.getPlatform && window.Capacitor.getPlatform() !== 'web')
-);
-
+"use strict";
 
 /*************************************************
- *  FIREBASE MESSAGING (PUSH)
+ * CONFIGURACIÓN GENERAL DE CAPACITOR
  *************************************************/
-let FirebaseMessaging = null;
 
-if (isNative && window.Capacitor?.Plugins) {
-  FirebaseMessaging = window.Capacitor.Plugins.FirebaseMessaging;
-}
+const CapacitorRuntime = window.Capacitor || {};
+const CapacitorPlugins = CapacitorRuntime.Plugins || {};
 
-async function initFirebasePush() {
+const platform =
+  typeof CapacitorRuntime.getPlatform === "function"
+    ? CapacitorRuntime.getPlatform()
+    : "web";
+
+const isNative =
+  typeof CapacitorRuntime.isNativePlatform === "function"
+    ? CapacitorRuntime.isNativePlatform()
+    : platform !== "web";
+
+console.log("Plataforma detectada:", platform);
+console.log("Ejecución nativa:", isNative);
+
+
+/*************************************************
+ * PLUGINS DE CAPACITOR
+ *************************************************/
+
+const FirebaseMessaging =
+  isNative && CapacitorPlugins.FirebaseMessaging
+    ? CapacitorPlugins.FirebaseMessaging
+    : null;
+
+const LocalNotifications =
+  isNative && CapacitorPlugins.LocalNotifications
+    ? CapacitorPlugins.LocalNotifications
+    : null;
+
+const BackgroundFetch =
+  isNative && CapacitorPlugins.BackgroundFetch
+    ? CapacitorPlugins.BackgroundFetch
+    : null;
+
+const BrowserPlugin =
+  isNative && CapacitorPlugins.Browser
+    ? CapacitorPlugins.Browser
+    : null;
+
+const CapHttp =
+  CapacitorPlugins.CapacitorHttp ||
+  CapacitorRuntime.CapacitorHttp ||
+  null;
+
+
+/*************************************************
+ * SERVIDOR PROXY
+ *************************************************/
+
+const PROXY_BASE =
+  "https://lunately-cryptogamic-alberta.ngrok-free.dev";
+
+
+/*************************************************
+ * FUENTES QUE SE VAN A MONITOREAR
+ *************************************************/
+
+const SOURCES = [
+  {
+    key: "edictos",
+    url: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/",
+    title: "Nuevos edictos",
+    open: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/"
+  },
+  {
+    key: "decretos",
+    url: "https://tulua.gov.co/documentos/795/decretos/",
+    title: "Nuevos decretos",
+    open: "https://tulua.gov.co/documentos/795/decretos/"
+  },
+  {
+    key: "resoluciones",
+    url: "https://tulua.gov.co/documentos/796/resoluciones/",
+    title: "Nuevas resoluciones",
+    open: "https://tulua.gov.co/documentos/796/resoluciones/"
+  },
+  {
+    key: "acuerdos",
+    url: "https://tulua.gov.co/documentos/794/acuerdos/",
+    title: "Nuevos acuerdos",
+    open: "https://tulua.gov.co/documentos/794/acuerdos/"
+  },
+  {
+    key: "noticias",
+    url: "https://tulua.gov.co/publicaciones/noticias/?tema=8",
+    title: "Nuevas noticias",
+    open: "https://tulua.gov.co/publicaciones/noticias/?tema=8"
+  }
+];
+
+
+/*************************************************
+ * APERTURA DE ENLACES
+ *************************************************/
+
+async function openExternalUrl(url) {
+  if (!url) return;
+
   try {
-    if (!FirebaseMessaging) {
-      console.warn("⚠️ FirebaseMessaging plugin no disponible.");
+    if (isNative && BrowserPlugin?.open) {
+      await BrowserPlugin.open({ url });
       return;
     }
 
-    // 1️⃣ Pedir permisos
-    const permStatus = await FirebaseMessaging.requestPermissions();
-    console.log("📱 Permisos push:", permStatus);
-
-    // 2️⃣ Obtener token
-    const token = await FirebaseMessaging.getToken();
-    console.log("🔥 TOKEN FCM:", token.token);
-    await fetch(`${PROXY_BASE}/register_token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: token.token })
-    });
-
-    // 3️⃣ Escuchar notificaciones en primer plano
-    FirebaseMessaging.addListener("messageReceived", (msg) => {
-      console.log("📩 Notificación recibida:", msg);
-      const title = msg.notification?.title || "Notificación";
-      const body = msg.notification?.body || "Mensaje recibido";
-      notifyUnified({ title, body });
-    });
-
-    // 🔥 Detectar notificación cuando la app se abre desde el cierre total
-FirebaseMessaging.addListener('notificationActionPerformed', (notification) => {
-  try {
-    const data = notification?.notification?.data;
-    const url = data?.url || null;
-    console.log('👉 Notificación abierta desde background:', data);
-    if (url) {
-      window.open(url, '_system'); // abre en navegador externo
-      // o usa location.href = url; si quieres dentro de la app
+    if (isNative) {
+      window.location.href = url;
+      return;
     }
-  } catch (e) {
-    console.error('❌ Error al abrir notificación:', e);
-  }
-});
 
+    window.open(url, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    console.error("Error abriendo la URL:", error);
 
-  } catch (err) {
-    console.error("❌ Error iniciando FirebaseMessaging:", err);
+    try {
+      window.location.href = url;
+    } catch (fallbackError) {
+      console.error(
+        "No fue posible abrir la URL:",
+        fallbackError
+      );
+    }
   }
 }
 
 
+/*************************************************
+ * FIREBASE MESSAGING
+ *************************************************/
 
-let LocalNotifications = isNative ? (window.Capacitor.Plugins?.LocalNotifications || null) : null;
+let firebaseListenersRegistered = false;
+
+async function registerFirebaseListeners() {
+  if (!FirebaseMessaging || firebaseListenersRegistered) {
+    return;
+  }
+
+  firebaseListenersRegistered = true;
+
+  try {
+    await FirebaseMessaging.addListener(
+      "messageReceived",
+      async (message) => {
+        console.log(
+          "Notificación Firebase recibida:",
+          message
+        );
+
+        const title =
+          message?.notification?.title ||
+          "Notificación";
+
+        const body =
+          message?.notification?.body ||
+          "Mensaje recibido";
+
+        const url =
+          message?.data?.url ||
+          message?.notification?.data?.url ||
+          null;
+
+        await notifyUnified({
+          title,
+          body,
+          url,
+          tag: "firebase-message"
+        });
+      }
+    );
+
+    await FirebaseMessaging.addListener(
+      "notificationActionPerformed",
+      async (event) => {
+        try {
+          console.log(
+            "Notificación Firebase seleccionada:",
+            event
+          );
+
+          const data =
+            event?.notification?.data ||
+            event?.data ||
+            {};
+
+          const url = data?.url || null;
+
+          if (url) {
+            await openExternalUrl(url);
+          }
+        } catch (error) {
+          console.error(
+            "Error procesando la notificación:",
+            error
+          );
+        }
+      }
+    );
+  } catch (error) {
+    firebaseListenersRegistered = false;
+
+    console.error(
+      "Error registrando listeners de Firebase:",
+      error
+    );
+  }
+}
+
+
+async function registerTokenOnServer(token) {
+  if (!token) {
+    console.warn(
+      "No se recibió un token válido de Firebase."
+    );
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${PROXY_BASE}/register_token`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ token })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `El servidor respondió HTTP ${response.status}`
+      );
+    }
+
+    console.log(
+      "Token Firebase registrado en el servidor."
+    );
+  } catch (error) {
+    /*
+     * La aplicación puede continuar funcionando aunque
+     * el servidor no permita registrar el token.
+     */
+    console.error(
+      "No fue posible registrar el token Firebase:",
+      error
+    );
+  }
+}
+
+
+async function initFirebasePush() {
+  if (!isNative) {
+    console.log(
+      "Firebase Messaging se omite en navegador."
+    );
+    return false;
+  }
+
+  if (!FirebaseMessaging) {
+    console.warn(
+      "FirebaseMessaging no está disponible."
+    );
+    return false;
+  }
+
+  try {
+    await registerFirebaseListeners();
+
+    const permissionStatus =
+      await FirebaseMessaging.requestPermissions();
+
+    console.log(
+      "Permisos Firebase:",
+      permissionStatus
+    );
+
+    const permissionGranted =
+      permissionStatus?.receive === "granted" ||
+      permissionStatus?.display === "granted";
+
+    if (!permissionGranted) {
+      console.warn(
+        "El permiso para Firebase Messaging no fue concedido."
+      );
+      return false;
+    }
+
+    const tokenResult =
+      await FirebaseMessaging.getToken();
+
+    const token = tokenResult?.token || null;
+
+    console.log(
+      "Token Firebase obtenido:",
+      token
+    );
+
+    await registerTokenOnServer(token);
+
+    return true;
+  } catch (error) {
+    console.error(
+      "Error iniciando Firebase Messaging:",
+      error
+    );
+
+    return false;
+  }
+}
+
 
 /*************************************************
- *  CANAL DE NOTIFICACIONES (ANDROID 8+)
+ * CANAL DE NOTIFICACIONES DE ANDROID
  *************************************************/
+
 async function ensureChannel() {
+  if (!isNative || platform !== "android") {
+    return;
+  }
+
+  if (!LocalNotifications?.createChannel) {
+    return;
+  }
+
   try {
-    if (LocalNotifications?.createChannel) {
-      await LocalNotifications.createChannel({
-        id: 'default',
-        name: 'Notificaciones',
-        description: 'Canal por defecto',
-        importance: 5
-      });
-    }
-  } catch (e) {
-    console.warn('No se pudo crear canal:', e);
+    await LocalNotifications.createChannel({
+      id: "default",
+      name: "Notificaciones",
+      description:
+        "Canal principal de notificaciones",
+      importance: 5,
+      visibility: 1,
+      vibration: true
+    });
+
+    console.log(
+      "Canal de notificaciones creado."
+    );
+  } catch (error) {
+    console.warn(
+      "No se pudo crear el canal de notificaciones:",
+      error
+    );
   }
 }
 
+
 /*************************************************
- *  PEDIR PERMISOS
+ * PERMISO DE NOTIFICACIONES
  *************************************************/
+
 async function ensureNotificationPermission() {
   try {
     if (isNative && LocalNotifications) {
       await ensureChannel();
-      const res = await LocalNotifications.requestPermissions();
-      return res?.display === 'granted';
-    } else if ('Notification' in window) {
-      if (Notification.permission === 'default') {
-        const r = await Notification.requestPermission();
-        return r === 'granted';
+
+      if (LocalNotifications.checkPermissions) {
+        const currentPermission =
+          await LocalNotifications.checkPermissions();
+
+        if (
+          currentPermission?.display === "granted"
+        ) {
+          return true;
+        }
       }
-      return Notification.permission === 'granted';
+
+      const permission =
+        await LocalNotifications.requestPermissions();
+
+      return permission?.display === "granted";
     }
-  } catch (e) {
-    console.warn('No se pudo pedir permiso:', e);
+
+    if ("Notification" in window) {
+      if (Notification.permission === "granted") {
+        return true;
+      }
+
+      if (Notification.permission === "denied") {
+        return false;
+      }
+
+      const result =
+        await Notification.requestPermission();
+
+      return result === "granted";
+    }
+  } catch (error) {
+    console.warn(
+      "No se pudo solicitar permiso de notificaciones:",
+      error
+    );
   }
+
   return false;
 }
 
-/*************************************************
- *  MOSTRAR NOTIFICACIONES
- *************************************************/
-async function notifyUnified({ title, body, url, tag }) {
-  if (!url) url = null;
 
-  // 🔗 Forzar vista de escritorio agregando parámetro
-  if (url && !url.includes("desktop=1")) {
-    url += (url.includes("?") ? "&" : "?") + "desktop=1";
+/*************************************************
+ * MOSTRAR NOTIFICACIONES
+ *************************************************/
+
+function addDesktopParameter(url) {
+  if (!url) return null;
+
+  try {
+    const parsedUrl = new URL(url);
+
+    if (!parsedUrl.searchParams.has("desktop")) {
+      parsedUrl.searchParams.set("desktop", "1");
+    }
+
+    return parsedUrl.href;
+  } catch {
+    return url;
   }
+}
+
+
+async function notifyUnified({
+  title,
+  body,
+  url = null,
+  tag = null
+}) {
+  const notificationTitle =
+    title || "Notificación";
+
+  const notificationBody =
+    body || "Tiene una nueva notificación.";
+
+  const finalUrl = addDesktopParameter(url);
 
   if (isNative && LocalNotifications) {
-    const at = new Date(Date.now() + 1000);
     try {
       await LocalNotifications.schedule({
-        notifications: [{
-          id: Math.floor(Math.random() * 1e6),
-          title,
-          body,
-          schedule: { at },
-          extra: { url: url || null, tag: tag || null }
-        }]
+        notifications: [
+          {
+            id: Math.floor(
+              Date.now() % 2147483647
+            ),
+            title: notificationTitle,
+            body: notificationBody,
+            schedule: {
+              at: new Date(Date.now() + 1000)
+            },
+            channelId:
+              platform === "android"
+                ? "default"
+                : undefined,
+            extra: {
+              url: finalUrl,
+              tag
+            }
+          }
+        ]
       });
-    } catch (e) {
-      console.error('[Notif][Native] schedule error:', e);
+
+      console.log(
+        "Notificación local programada."
+      );
+    } catch (error) {
+      console.error(
+        "Error programando notificación local:",
+        error
+      );
     }
-  } else {
-    swNotify({ title, body, url, tag });
+
+    return;
+  }
+
+  await swNotify({
+    title: notificationTitle,
+    body: notificationBody,
+    url: finalUrl,
+    tag
+  });
+}
+
+
+/*************************************************
+ * CLIC EN NOTIFICACIONES LOCALES
+ *************************************************/
+
+let localNotificationListenerRegistered = false;
+
+async function registerLocalNotificationListener() {
+  if (
+    !isNative ||
+    !LocalNotifications ||
+    localNotificationListenerRegistered
+  ) {
+    return;
+  }
+
+  try {
+    localNotificationListenerRegistered = true;
+
+    await LocalNotifications.addListener(
+      "localNotificationActionPerformed",
+      async (event) => {
+        try {
+          const url =
+            event?.notification?.extra?.url ||
+            null;
+
+          if (url) {
+            await openExternalUrl(url);
+          }
+        } catch (error) {
+          console.error(
+            "Error procesando notificación local:",
+            error
+          );
+        }
+      }
+    );
+  } catch (error) {
+    localNotificationListenerRegistered = false;
+
+    console.error(
+      "No se pudo registrar el listener local:",
+      error
+    );
   }
 }
 
-// Clic en notificación nativa
-if (isNative && LocalNotifications) {
-  LocalNotifications.addListener('localNotificationActionPerformed', (evt) => {
-    try {
-      const u = evt?.notification?.extra?.url;
-      if (u) location.href = u;
-    } catch {}
-  });
-}
 
 /*************************************************
- *  NOTIFICACIONES WEB (Service Worker)
- *************************************************/
-function swNotify({ title, body, url, tag }) {
-  if (!("serviceWorker" in navigator)) return;
-  if (Notification.permission !== "granted") return;
-  navigator.serviceWorker.ready.then(async (reg) => {
-    const opts = {
-      body,
-      icon: "logo.png",
-      badge: "logo.png",
-      data: { url: url || null },
-      tag: tag || undefined,
-      renotify: !!tag
-    };
-    if (reg.showNotification) await reg.showNotification(title, opts);
-  });
-}
-
-/*************************************************
- *  FUENTES A MONITOREAR
- *************************************************/
-const SOURCES = [
-  { key: "edictos",      url: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/", title: "Nuevos edictos",      open: "https://tulua.gov.co/documentos/5/edictos-y-notificaciones/" },
-  { key: "decretos",     url: "https://tulua.gov.co/documentos/795/decretos/",               title: "Nuevos decretos",     open: "https://tulua.gov.co/documentos/795/decretos/" },
-  { key: "resoluciones", url: "https://tulua.gov.co/documentos/796/resoluciones/",           title: "Nuevas resoluciones", open: "https://tulua.gov.co/documentos/796/resoluciones/" },
-  { key: "acuerdos",     url: "https://tulua.gov.co/documentos/794/acuerdos/",               title: "Nuevos acuerdos",     open: "https://tulua.gov.co/documentos/794/acuerdos/" },
-  { key: "noticias",     url: "https://tulua.gov.co/publicaciones/noticias/?tema=8",         title: "Nuevas noticias",     open: "https://tulua.gov.co/publicaciones/noticias/?tema=8" },
-];
-
-
-
-/*************************************************
- *  LECTURA Y FIRMA DE PÁGINAS
- *************************************************/
-async function fetchHTML(url) {
-  const r = await fetch(url, { cache: 'no-store' });
-  return await r.text();
-}
-
-
-
-async function simpleHash(str) {
-  const enc = new TextEncoder();
-  const buf = await crypto.subtle.digest("SHA-1", enc.encode(str));
-  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-/*************************************************
- *  CHEQUEO DE CAMBIOS
+ * NOTIFICACIONES WEB MEDIANTE SERVICE WORKER
  *************************************************/
 
-// 🔧 Dirección del proxy FastAPI en tu servidor IIS o PC
-const PROXY_BASE = "https://lunately-cryptogamic-alberta.ngrok-free.dev";
+async function swNotify({
+  title,
+  body,
+  url,
+  tag
+}) {
+  if (!("serviceWorker" in navigator)) {
+    console.warn(
+      "Service Worker no disponible."
+    );
+    return;
+  }
 
-async function getDocListSignature(src) {
+  if (
+    !("Notification" in window) ||
+    Notification.permission !== "granted"
+  ) {
+    return;
+  }
+
   try {
-    console.log("🌍 Analizando vía proxy:", src.url);
-    const apiUrl = `${PROXY_BASE}/check_docs?url=${encodeURIComponent(src.url)}`;
+    const registration =
+      await navigator.serviceWorker.ready;
+
+    await registration.showNotification(
+      title,
+      {
+        body,
+        icon: "logo.png",
+        badge: "logo.png",
+        data: {
+          url: url || null
+        },
+        tag: tag || undefined,
+        renotify: Boolean(tag)
+      }
+    );
+  } catch (error) {
+    console.error(
+      "Error mostrando notificación web:",
+      error
+    );
+  }
+}
+
+
+/*************************************************
+ * PETICIONES HTTP
+ *************************************************/
+
+async function httpGetText(url) {
+  if (isNative && CapHttp) {
+    try {
+      const response = await CapHttp.get({
+        url,
+        connectTimeout: 15000,
+        readTimeout: 15000
+      });
+
+      return typeof response.data === "string"
+        ? response.data
+        : JSON.stringify(response.data);
+    } catch (error) {
+      console.warn(
+        "Error HTTP nativo:",
+        error
+      );
+
+      throw error;
+    }
+  }
+
+  const response = await fetch(url, {
+    cache: "no-store",
+    mode: "cors"
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `HTTP ${response.status}`
+    );
+  }
+
+  return response.text();
+}
+
+
+async function httpGetJson(url) {
+  if (isNative && CapHttp) {
+    const response = await CapHttp.get({
+      url,
+      connectTimeout: 15000,
+      readTimeout: 15000
+    });
+
+    if (typeof response.data === "string") {
+      return JSON.parse(response.data);
+    }
+
+    return response.data;
+  }
+
+  const response = await fetch(url, {
+    mode: "cors",
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `HTTP ${response.status}`
+    );
+  }
+
+  return response.json();
+}
+
+
+/*************************************************
+ * FIRMA DE DOCUMENTOS MEDIANTE EL PROXY
+ *************************************************/
+
+async function getDocListSignature(source) {
+  try {
+    console.log(
+      "Analizando fuente mediante proxy:",
+      source.url
+    );
+
+    const apiUrl =
+      `${PROXY_BASE}/check_docs?url=` +
+      encodeURIComponent(source.url);
+
     const data = await httpGetJson(apiUrl);
 
-    console.log(`🧩 Proxy detectó ${data.count} documentos en ${src.key}`);
-    return { hash: data.hash || "", links: Array.isArray(data.links) ? data.links : [] };
-  } catch (e) {
-    console.error("❌ Error en getDocListSignature (proxy):", e);
-    return { hash: "", links: [] };
+    const links =
+      Array.isArray(data?.links)
+        ? data.links
+        : [];
+
+    console.log(
+      `El proxy detectó ${data?.count || links.length} documentos en ${source.key}.`
+    );
+
+    return {
+      hash: data?.hash || "",
+      links
+    };
+  } catch (error) {
+    console.error(
+      `Error analizando ${source.key}:`,
+      error
+    );
+
+    return {
+      hash: "",
+      links: []
+    };
   }
 }
 
 
-async function checkSource(src) {
+/*************************************************
+ * STORAGE
+ *************************************************/
+
+function readSeen(key) {
   try {
-    const KEY_HASH = `lastDocHash:${src.key}`;
-    const KEY_SEEN = `seenDocs:${src.key}`;
+    return JSON.parse(
+      localStorage.getItem(key) || "[]"
+    );
+  } catch {
+    return [];
+  }
+}
 
-    const { hash, links } = await getDocListSignature(src);
-    const prevHash = localStorage.getItem(KEY_HASH);
 
-    // Si nunca se ha guardado un hash previo, guarda y no notifica
-    if (!prevHash) {
-      localStorage.setItem(KEY_HASH, hash);
-      writeSeen(KEY_SEEN, links);
-      console.log(`🆕 Inicializando fuente: ${src.key}`);
+function writeSeen(key, values) {
+  try {
+    localStorage.setItem(
+      key,
+      JSON.stringify(values)
+    );
+  } catch (error) {
+    console.warn(
+      "No se pudo guardar información local:",
+      error
+    );
+  }
+}
+
+
+/*************************************************
+ * COMPROBACIÓN DE CADA FUENTE
+ *************************************************/
+
+async function checkSource(source) {
+  try {
+    const hashKey =
+      `lastDocHash:${source.key}`;
+
+    const seenKey =
+      `seenDocs:${source.key}`;
+
+    const { hash, links } =
+      await getDocListSignature(source);
+
+    /*
+     * No actualizamos el almacenamiento si el proxy
+     * respondió sin hash. Esto evita falsas detecciones.
+     */
+    if (!hash) {
+      console.warn(
+        `No se obtuvo un hash válido para ${source.key}.`
+      );
+
       return false;
     }
 
-    // Si el hash cambió, revisa si hay nuevos enlaces
-    if (prevHash !== hash) {
-      const prevSeen = new Set(readSeen(KEY_SEEN));
-      const nuevos = links.filter(u => !prevSeen.has(u));
+    const previousHash =
+      localStorage.getItem(hashKey);
 
-      localStorage.setItem(KEY_HASH, hash);
-      writeSeen(KEY_SEEN, links);
+    /*
+     * Primera ejecución:
+     * se almacena el estado actual sin notificar.
+     */
+    if (!previousHash) {
+      localStorage.setItem(hashKey, hash);
+      writeSeen(seenKey, links);
 
-      if (nuevos.length > 0) {
-        console.log(`📢 Cambio detectado en ${src.key}: ${nuevos.length} nuevos documentos`);
-        await notifyUnified({
-          title: src.title,
-          body: "Se publicó un nuevo documento. Tócalo para abrir.",
-          url: src.open,
-          tag: `tag-${src.key}`,
-        });
-        return true;
-      }
+      console.log(
+        `Fuente inicializada: ${source.key}`
+      );
+
+      return false;
     }
-  } catch (err) {
-    console.warn(`[checkSource] Error en ${src.key}:`, err);
+
+    if (previousHash === hash) {
+      return false;
+    }
+
+    const previouslySeen =
+      new Set(readSeen(seenKey));
+
+    const newLinks = links.filter(
+      (link) => !previouslySeen.has(link)
+    );
+
+    localStorage.setItem(hashKey, hash);
+    writeSeen(seenKey, links);
+
+    if (newLinks.length === 0) {
+      console.log(
+        `Cambió ${source.key}, pero no se identificaron enlaces nuevos.`
+      );
+
+      return false;
+    }
+
+    console.log(
+      `${newLinks.length} documentos nuevos en ${source.key}.`
+    );
+
+    await notifyUnified({
+      title: source.title,
+      body:
+        newLinks.length === 1
+          ? "Se publicó un nuevo documento. Tócalo para abrir."
+          : `Se publicaron ${newLinks.length} documentos nuevos.`,
+      url: source.open,
+      tag: `tag-${source.key}`
+    });
+
+    return true;
+  } catch (error) {
+    console.warn(
+      `Error comprobando ${source.key}:`,
+      error
+    );
+
+    return false;
   }
-  return false;
 }
-
-
-async function checkAllSourcesForUpdates() {
-  try {
-    // 👇 Solo muestra mensaje en consola, sin notificar
-    console.log("🔍 [Interno] Revisando actualizaciones...");
-
-    let huboCambios = false;
-
-    const resultados = await Promise.allSettled(SOURCES.map(checkSource));
-    for (const r of resultados) {
-      if (r.value === true) huboCambios = true;
-    }
-
-    if (!huboCambios) {
-      console.log("✅ [Interno] Sin novedades — No se encontraron nuevas publicaciones.");
-    }
-
-    console.log(huboCambios ? "📢 Hay cambios nuevos" : "🟢 Sin novedades");
-  } catch (e) {
-    console.error("❌ Error al revisar fuentes:", e);
-  }
-}
-
 
 
 /*************************************************
- *  BACKGROUND FETCH (APP CERRADA - APK)
+ * COMPROBACIÓN DE TODAS LAS FUENTES
  *************************************************/
-if (isNative && window.Capacitor.Plugins?.BackgroundFetch) {
-  const { BackgroundFetch, LocalNotifications } = window.Capacitor.Plugins;
 
-  async function setupBackgroundFetch() {
-    try {
-      const status = await BackgroundFetch.configure(
+let checkInProgress = false;
+
+async function checkAllSourcesForUpdates() {
+  if (checkInProgress) {
+    console.log(
+      "Ya existe una comprobación en curso."
+    );
+
+    return false;
+  }
+
+  checkInProgress = true;
+
+  try {
+    console.log(
+      "Revisando actualizaciones..."
+    );
+
+    const results =
+      await Promise.allSettled(
+        SOURCES.map(checkSource)
+      );
+
+    let changesFound = false;
+
+    for (const result of results) {
+      if (
+        result.status === "fulfilled" &&
+        result.value === true
+      ) {
+        changesFound = true;
+      }
+    }
+
+    console.log(
+      changesFound
+        ? "Se encontraron novedades."
+        : "No se encontraron novedades."
+    );
+
+    /*
+     * Este return faltaba en el archivo anterior.
+     * Background Fetch necesita recibir este valor.
+     */
+    return changesFound;
+  } catch (error) {
+    console.error(
+      "Error revisando las fuentes:",
+      error
+    );
+
+    return false;
+  } finally {
+    checkInProgress = false;
+  }
+}
+
+
+/*************************************************
+ * BACKGROUND FETCH
+ *************************************************/
+
+let backgroundFetchConfigured = false;
+
+async function setupBackgroundFetch() {
+  if (
+    !isNative ||
+    !BackgroundFetch ||
+    backgroundFetchConfigured
+  ) {
+    return;
+  }
+
+  try {
+    backgroundFetchConfigured = true;
+
+    const status =
+      await BackgroundFetch.configure(
         {
-          minimumFetchInterval: 15, // cada 15 minutos
-          stopOnTerminate: false,   // ❗ sigue funcionando si cierras la app
-          startOnBoot: true,        // ✅ arranca con el dispositivo
-          enableHeadless: true,     // 🔥 permite ejecución en modo cerrado total
-          requiredNetworkType: 0,   // cualquier red
+          minimumFetchInterval: 15,
+          stopOnTerminate: false,
+          startOnBoot: true,
+          enableHeadless: true,
+          requiredNetworkType: 0
         },
+
         async (taskId) => {
-          console.log('🔁 BackgroundFetch ejecutado:', taskId);
+          console.log(
+            "Background Fetch ejecutado:",
+            taskId
+          );
 
-          // ejecuta la verificación en segundo plano
-          const huboCambios = await checkAllSourcesForUpdates();
-
-          if (huboCambios) {
-            await LocalNotifications.schedule({
-              notifications: [{
-                id: Math.floor(Math.random() * 1e6),
-                title: "📢 Nueva publicación detectada",
-                body: "Se publicó un nuevo documento.",
-              }]
-            });
+          try {
+            await checkAllSourcesForUpdates();
+          } catch (error) {
+            console.error(
+              "Error dentro de Background Fetch:",
+              error
+            );
+          } finally {
+            await BackgroundFetch.finish(taskId);
           }
-
-          await BackgroundFetch.finish(taskId);
         },
+
         async (taskId) => {
-          console.log('⚠️ BackgroundFetch timeout:', taskId);
+          console.warn(
+            "Background Fetch agotó el tiempo:",
+            taskId
+          );
+
           await BackgroundFetch.finish(taskId);
         }
       );
 
-      console.log('✅ BackgroundFetch configurado correctamente:', status);
+    console.log(
+      "Background Fetch configurado:",
+      status
+    );
 
-      // 🔄 Inicia de inmediato
-      const isRunning = await BackgroundFetch.start();
-      console.log('🚀 BackgroundFetch iniciado:', isRunning);
-    } catch (e) {
-      console.error('❌ Error iniciando BackgroundFetch:', e);
+    if (BackgroundFetch.start) {
+      const startResult =
+        await BackgroundFetch.start();
+
+      console.log(
+        "Background Fetch iniciado:",
+        startResult
+      );
     }
-  }
+  } catch (error) {
+    backgroundFetchConfigured = false;
 
-  // Ejecuta en nativo (capacitor ready)
-  document.addEventListener('deviceready', setupBackgroundFetch, false);
+    console.error(
+      "Error configurando Background Fetch:",
+      error
+    );
+  }
 }
 
 
 /*************************************************
- *  ARRANQUE Y PERIODIC BACKGROUND SYNC (WEB)
+ * PERIODIC BACKGROUND SYNC WEB
  *************************************************/
-document.addEventListener("DOMContentLoaded", async () => {
 
-
-  // Aviso cuando estás sirviendo por HTTP en red local (SW y CORS no funcionarán bien)
-  const onHttpLan = location.protocol === 'http:' && !location.hostname.includes('localhost');
-  if (!isNative && onHttpLan) {
-    console.warn('⚠️ Estás en HTTP sobre red local: el Service Worker requiere HTTPS/localhost y el fetch a dominios externos puede fallar por CORS.');
-  }
-
-  console.log("📱 App iniciada, solicitando permisos...");
-
-  await initFirebasePush();
-
-  const granted = await ensureNotificationPermission();
-
-  if (!granted) {
-    console.warn("🚫 Permiso de notificaciones no concedido.");
+async function setupPeriodicWebSync() {
+  if (
+    isNative ||
+    !("serviceWorker" in navigator)
+  ) {
     return;
   }
 
-  console.log("✅ Permiso concedido, iniciando chequeos...");
-  await checkAllSourcesForUpdates();
+  try {
+    const registration =
+      await navigator.serviceWorker.ready;
 
-  // Revisión periódica mientras está abierta
-  const intervalMs = isNative ? 30 * 1000 : 60 * 1000; // 30s en nativo, 60s en web
-  setInterval(async () => {
-    console.log("⏱️ Disparando revisión periódica...");
-    await checkAllSourcesForUpdates();
-  }, intervalMs);
+    if (!registration.periodicSync) {
+      console.warn(
+        "Periodic Sync no está disponible."
+      );
 
-  // 🔁 Background sync (PWA cerrada)
-  if ("serviceWorker" in navigator) {
-    try {
-      const reg = await navigator.serviceWorker.ready;
-
-      // Preferimos la detección directa en el registro del SW
-      if ('periodicSync' in reg) {
-        try {
-          const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
-          if (status.state === 'granted') {
-            await reg.periodicSync.register('check-updates', {
-              minInterval: 15 * 60 * 1000 // ✅ cada 15 minutos
-            });
-            console.log('✅ Periodic background sync (15 min) registrado');
-          } else {
-            console.warn('⚠️ No se otorgó permiso para background sync');
-          }
-        } catch (e) {
-          console.error('❌ Error registrando periodic sync (reg.periodicSync):', e);
-        }
-      }
-      // Compatibilidad con la verificación antigua
-      else if ("PeriodicSyncManager" in self) {
-        try {
-          const status = await navigator.permissions.query({ name: 'periodic-background-sync' });
-          if (status.state === 'granted') {
-            await reg.periodicSync.register('check-updates', {
-              minInterval: 15 * 60 * 1000
-            });
-            console.log('✅ Periodic background sync (15 min) registrado [fallback]');
-          } else {
-            console.warn('⚠️ No se otorgó permiso para background sync [fallback]');
-          }
-        } catch (e) {
-          console.error('❌ Error registrando periodic sync [fallback]:', e);
-        }
-      } else {
-        console.warn('ℹ️ periodicSync no está disponible en este navegador/entorno.');
-      }
-    } catch (e) {
-      console.error('❌ Error obteniendo serviceWorker.ready:', e);
+      return;
     }
-  } else {
-    console.warn('ℹ️ Service Worker no disponible en este entorno.');
+
+    let permissionGranted = false;
+
+    try {
+      const permissionStatus =
+        await navigator.permissions.query({
+          name: "periodic-background-sync"
+        });
+
+      permissionGranted =
+        permissionStatus.state === "granted";
+    } catch (error) {
+      console.warn(
+        "No fue posible consultar el permiso de Periodic Sync:",
+        error
+      );
+    }
+
+    if (!permissionGranted) {
+      console.warn(
+        "Periodic Sync no tiene permiso."
+      );
+
+      return;
+    }
+
+    await registration.periodicSync.register(
+      "check-updates",
+      {
+        minInterval: 15 * 60 * 1000
+      }
+    );
+
+    console.log(
+      "Periodic Sync registrado."
+    );
+  } catch (error) {
+    console.error(
+      "Error registrando Periodic Sync:",
+      error
+    );
   }
-});
+}
 
 
 /*************************************************
- *  FUNCIONES DE PRUEBA
+ * NAVEGACIÓN ENTRE PANTALLAS
  *************************************************/
-window.forzarCambio = (key = 'edictos') => {
-  localStorage.setItem(`lastSig:${key}`, 'x');
-  const src = SOURCES.find(s => s.key === key);
-  if (src) checkSource(src);
+
+function goTo(screenId) {
+  const target =
+    document.getElementById(screenId);
+
+  if (!target) {
+    console.error(
+      `No existe la pantalla: ${screenId}`
+    );
+
+    return;
+  }
+
+  document
+    .querySelectorAll(".screen")
+    .forEach((screen) => {
+      const isTarget =
+        screen.id === screenId;
+
+      screen.classList.toggle(
+        "active",
+        isTarget
+      );
+
+      screen.setAttribute(
+        "aria-hidden",
+        isTarget ? "false" : "true"
+      );
+    });
+
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "auto"
+  });
+
+  const firstHeading =
+    target.querySelector("h1, h2");
+
+  if (firstHeading) {
+    firstHeading.setAttribute(
+      "tabindex",
+      "-1"
+    );
+
+    firstHeading.focus({
+      preventScroll: true
+    });
+  }
+}
+
+
+function setupInternalNavigation() {
+  document
+    .querySelectorAll("[data-target]")
+    .forEach((element) => {
+      element.addEventListener(
+        "click",
+        () => {
+          const target =
+            element.dataset.target;
+
+          if (target) {
+            goTo(target);
+          }
+        }
+      );
+    });
+
+  document
+    .querySelectorAll(".screen")
+    .forEach((screen) => {
+      screen.setAttribute(
+        "aria-hidden",
+        screen.classList.contains("active")
+          ? "false"
+          : "true"
+      );
+    });
+}
+
+
+/*************************************************
+ * REVISIÓN PERIÓDICA CON LA APP ABIERTA
+ *************************************************/
+
+let foregroundInterval = null;
+
+function startForegroundChecks() {
+  if (foregroundInterval) {
+    clearInterval(foregroundInterval);
+  }
+
+  /*
+   * Durante desarrollo puede usarse un intervalo corto.
+   * En producción se recomienda no consultar cada 30 segundos.
+   */
+  const intervalMilliseconds =
+    isNative
+      ? 5 * 60 * 1000
+      : 10 * 60 * 1000;
+
+  foregroundInterval = setInterval(
+    async () => {
+      console.log(
+        "Ejecutando revisión periódica..."
+      );
+
+      await checkAllSourcesForUpdates();
+    },
+    intervalMilliseconds
+  );
+}
+
+
+/*************************************************
+ * INICIALIZACIÓN
+ *************************************************/
+
+async function initializeApplication() {
+  setupInternalNavigation();
+
+  const runningOnHttpLan =
+    location.protocol === "http:" &&
+    !["localhost", "127.0.0.1"].includes(
+      location.hostname
+    );
+
+  if (!isNative && runningOnHttpLan) {
+    console.warn(
+      "La aplicación está ejecutándose por HTTP en red local. Service Worker y CORS pueden fallar."
+    );
+  }
+
+  console.log(
+    "Inicializando aplicación..."
+  );
+
+  await registerLocalNotificationListener();
+
+  /*
+   * Firebase y notificaciones locales solicitan permisos
+   * de manera independiente.
+   */
+  await initFirebasePush();
+
+  const notificationGranted =
+    await ensureNotificationPermission();
+
+  if (!notificationGranted) {
+    console.warn(
+      "El permiso de notificaciones no fue concedido. La aplicación continuará funcionando sin avisos locales."
+    );
+  }
+
+  /*
+   * Aunque el permiso sea rechazado, continuamos
+   * configurando navegación y funcionamiento general.
+   */
+  await setupBackgroundFetch();
+
+  if (notificationGranted) {
+    await checkAllSourcesForUpdates();
+    startForegroundChecks();
+  }
+
+  await setupPeriodicWebSync();
+
+  console.log(
+    "Aplicación inicializada."
+  );
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  initializeApplication
+);
+
+
+/*************************************************
+ * FUNCIONES DE PRUEBA
+ *************************************************/
+
+window.forzarCambio = async (
+  key = "edictos"
+) => {
+  const source =
+    SOURCES.find(
+      (item) => item.key === key
+    );
+
+  if (!source) {
+    console.error(
+      `No existe la fuente: ${key}`
+    );
+
+    return false;
+  }
+
+  /*
+   * La clave correcta es lastDocHash,
+   * no lastSig.
+   */
+  localStorage.setItem(
+    `lastDocHash:${key}`,
+    `prueba-${Date.now()}`
+  );
+
+  console.log(
+    `Cambio forzado para ${key}.`
+  );
+
+  return checkSource(source);
 };
 
-window.testNotify = () =>
-  notifyUnified({ title: "Prueba", body: "Hola desde notifyUnified", url: "https://tulua.gov.co", tag: "demo" });
 
-/*************************************************
- *  NAVEGACIÓN ENTRE PANTALLAS INTERNAS
- *************************************************/
-function goTo(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById(id);
-  if (target) target.classList.add('active');
-}
-
-// Asignar eventos a todos los botones que tengan data-target
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("[data-target]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const target = btn.getAttribute("data-target");
-      goTo(target);
-    });
+window.testNotify = async () => {
+  return notifyUnified({
+    title: "Prueba",
+    body:
+      "Hola desde la aplicación de la Alcaldía de Tuluá.",
+    url: "https://tulua.gov.co",
+    tag: `demo-${Date.now()}`
   });
-});
+};
 
 
-
-/*************************************************
- *  UTIL: HTTP con bypass CORS en nativo (Capacitor 5)
- *************************************************/
-const cap = window.Capacitor || {};
-const Plugins = cap.Plugins || {};
-
-// Capacitor 5 expone el HTTP oficial así (según build):
-// - Plugins.CapacitorHttp  (común)
-// - ó cap.CapacitorHttp    (algunas integraciones)
-const CapHttp = Plugins.CapacitorHttp || cap.CapacitorHttp || null;
-
-async function httpGetText(url) {
-  // Nativo → usa HTTP oficial (sin CORS)
-  if (isNative && CapHttp) {
-    try {
-      const res = await CapHttp.get({ url, connectTimeout: 15000, readTimeout: 15000 });
-      return typeof res.data === 'string' ? res.data : JSON.stringify(res.data);
-    } catch (e) {
-      console.warn('[HTTP Native] Error:', e);
-      throw e;
-    }
-  }
-  // Web → fetch normal (sujeto a CORS)
-  const r = await fetch(url, { cache: 'no-store', mode: 'cors' });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  return await r.text();
-}
-
-async function httpGetJson(url) {
-  if (isNative && CapHttp) {
-    const res = await CapHttp.get({ url, connectTimeout: 15000, readTimeout: 15000 });
-    return typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
-  } else {
-    const r = await fetch(url, { mode: 'cors', cache: 'no-store' });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return await r.json();
-  }
-}
+window.checkUpdates = async () => {
+  return checkAllSourcesForUpdates();
+};
 
 
 /*************************************************
- *  PARSEO: extraer enlaces a documentos (mejorado)
+ * UTILIDADES PARA EXTRAER DOCUMENTOS
+ * Se conservan para pruebas futuras.
  *************************************************/
-const DOC_EXT_RE = /\.(pdf|doc|docx|xls|xlsx)(\?|#|$)/i;
+
+const DOC_EXT_RE =
+  /\.(pdf|doc|docx|xls|xlsx)(\?|#|$)/i;
+
 
 function absolutize(href, base) {
-  try { return new URL(href, base).href; } catch { return href; }
+  try {
+    return new URL(href, base).href;
+  } catch {
+    return href;
+  }
 }
 
-function parseDocLinksFromHTML(html, baseUrl) {
-  const docs = new Set();
 
-  // 1️⃣ Buscar href, data-file o src con extensión de documento
-  const matches = html.matchAll(/(?:href|data-file|src)\s*=\s*["']([^"']+\.(pdf|docx?|xlsx?))["']/gi);
-  for (const m of matches) {
-    const abs = absolutize(m[1], baseUrl);
-    docs.add(abs);
+function parseDocLinksFromHTML(
+  html,
+  baseUrl
+) {
+  const documents = new Set();
+
+  const attributeMatches =
+    html.matchAll(
+      /(?:href|data-file|src)\s*=\s*["']([^"']+\.(pdf|docx?|xlsx?)(?:[?#][^"']*)?)["']/gi
+    );
+
+  for (const match of attributeMatches) {
+    const absoluteUrl =
+      absolutize(match[1], baseUrl);
+
+    documents.add(absoluteUrl);
   }
 
-  // 2️⃣ Buscar URLs embebidas dentro de scripts o JSON
-  const jsonMatches = html.matchAll(/https?:\/\/[^\s"'<>]+\.(pdf|docx?|xlsx?)/gi);
-  for (const m of jsonMatches) {
-    docs.add(m[0]);
+  const absoluteMatches =
+    html.matchAll(
+      /https?:\/\/[^\s"'<>]+\.(pdf|docx?|xlsx?)(?:[?#][^\s"'<>]*)?/gi
+    );
+
+  for (const match of absoluteMatches) {
+    documents.add(match[0]);
   }
 
-  // 3️⃣ Si hay PDFs relativos, convertirlos con base
-  const relMatches = html.matchAll(/["']([^"']+\/[^"']+\.(pdf|docx?|xlsx?))["']/gi);
-  for (const m of relMatches) {
-    const abs = absolutize(m[1], baseUrl);
-    docs.add(abs);
+  const relativeMatches =
+    html.matchAll(
+      /["']([^"']+\/[^"']+\.(pdf|docx?|xlsx?)(?:[?#][^"']*)?)["']/gi
+    );
+
+  for (const match of relativeMatches) {
+    const absoluteUrl =
+      absolutize(match[1], baseUrl);
+
+    documents.add(absoluteUrl);
   }
 
-  const arr = Array.from(docs).slice(0, 50);
-  console.log(`🧩 Detectados ${arr.length} documentos en ${baseUrl}`);
-  return arr;
-}
+  const result =
+    Array.from(documents).slice(0, 50);
 
+  console.log(
+    `Se detectaron ${result.length} documentos en ${baseUrl}.`
+  );
 
-/*************************************************
- *  STORAGE helper (clave por fuente)
- *************************************************/
-function readSeen(key) {
-  try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+  return result;
 }
-function writeSeen(key, arr) {
-  try { localStorage.setItem(key, JSON.stringify(arr)); } catch {}
-}
-
