@@ -15,3 +15,4 @@ android/build/
 Thumbs.db
 .vscode/
 .idea/
+ios/App/App/GoogleService-Info.plist
