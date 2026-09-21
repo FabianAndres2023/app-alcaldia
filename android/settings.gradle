@@ -1,0 +1,24 @@
+pluginManagement {
+  repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://maven.transistorsoft.com' }  // 👈 AÑADE ESTO
+    gradlePluginPortal()
+  }
+}
+
+dependencyResolutionManagement {
+  // ✅ Permite que los módulos (como capacitor-android) definan repositorios
+  repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+  repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://maven.transistorsoft.com' }  // 👈 AÑADE ESTO
+  }
+}
+
+include ':app'
+// include ':capacitor-cordova-android-plugins'
+// project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
+
+apply from: 'capacitor.settings.gradle'

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AlcaldiaDeTulua</string>
+    <string name="title_activity_main">AlcaldiaDeTulua</string>
+    <string name="package_name">gov.tulua.app</string>
+    <string name="custom_url_scheme">gov.tulua.app</string>
+</resources>

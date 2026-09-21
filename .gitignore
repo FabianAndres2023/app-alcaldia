@@ -1,0 +1,18 @@
+# === Ignorar solo cosas realmente innecesarias ===
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# === Android: ignora solo los caches temporales ===
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/build/
+android/build/
+
+# === Archivos del sistema y del editor ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+ios/App/App/GoogleService-Info.plist

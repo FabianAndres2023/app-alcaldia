@@ -1,0 +1,28 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter() // opcional, ayuda con librerías antiguas
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.7.2'
+        classpath 'com.google.gms:google-services:4.4.4'  // ✅ Última versión de Firebase
+    }
+}
+
+apply from: "variables.gradle"
+
+// ✅ Garantiza que todas las dependencias (Firebase, AndroidX, etc.) se resuelvan correctamente
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter() // opcional
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
