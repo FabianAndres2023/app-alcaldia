@@ -35,6 +35,21 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_SERVICE_INFO_BASE64 }}" | base64 --decode > ios/App/App/GoogleService-Info.plist
 
+      - name: Register GoogleService-Info.plist in Xcode project
+        run: |
+          ruby -e '
+          require "xcodeproj"
+          project = Xcodeproj::Project.open("ios/App/App.xcodeproj")
+          target = project.targets.find { |t| t.name == "App" }
+          group = project.main_group.find_subpath("App", true)
+          existing = group.files.find { |f| f.path == "GoogleService-Info.plist" }
+          unless existing
+            file_ref = group.new_reference("GoogleService-Info.plist")
+            target.resources_build_phase.add_file_reference(file_ref)
+          end
+          project.save
+          '
+
       - name: Install Apple certificate and provisioning profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
