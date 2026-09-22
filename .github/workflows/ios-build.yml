@@ -105,8 +105,8 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_KEY_BASE64 }}
         run: |
-          mkdir -p ~/private_keys
-          echo -n "$APP_STORE_CONNECT_KEY_BASE64" | base64 --decode -o ~/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+          mkdir -p "$HOME/private_keys"
+          echo -n "$APP_STORE_CONNECT_KEY_BASE64" | base64 --decode -o "$HOME/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8"
 
           IPA_PATH=$(find $RUNNER_TEMP/export -name "*.ipa" | head -n 1)
 
