@@ -1,7 +1,7 @@
-"use strict";
+﻿"use strict";
 
 /*************************************************
- * CONFIGURACIÓN GENERAL DE CAPACITOR
+ * CONFIGURACIÃ“N GENERAL DE CAPACITOR
  *************************************************/
 
 const CapacitorRuntime = window.Capacitor || {};
@@ -18,7 +18,7 @@ const isNative =
     : platform !== "web";
 
 console.log("Plataforma detectada:", platform);
-console.log("Ejecución nativa:", isNative);
+console.log("EjecuciÃ³n nativa:", isNative);
 
 
 /*************************************************
@@ -149,13 +149,13 @@ async function registerFirebaseListeners() {
       "messageReceived",
       async (message) => {
         console.log(
-          "Notificación Firebase recibida:",
+          "NotificaciÃ³n Firebase recibida:",
           message
         );
 
         const title =
           message?.notification?.title ||
-          "Notificación";
+          "NotificaciÃ³n";
 
         const body =
           message?.notification?.body ||
@@ -180,7 +180,7 @@ async function registerFirebaseListeners() {
       async (event) => {
         try {
           console.log(
-            "Notificación Firebase seleccionada:",
+            "NotificaciÃ³n Firebase seleccionada:",
             event
           );
 
@@ -196,7 +196,7 @@ async function registerFirebaseListeners() {
           }
         } catch (error) {
           console.error(
-            "Error procesando la notificación:",
+            "Error procesando la notificaciÃ³n:",
             error
           );
         }
@@ -216,7 +216,7 @@ async function registerFirebaseListeners() {
 async function registerTokenOnServer(token) {
   if (!token) {
     console.warn(
-      "No se recibió un token válido de Firebase."
+      "No se recibiÃ³ un token vÃ¡lido de Firebase."
     );
     return;
   }
@@ -235,7 +235,7 @@ async function registerTokenOnServer(token) {
 
     if (!response.ok) {
       throw new Error(
-        `El servidor respondió HTTP ${response.status}`
+        `El servidor respondiÃ³ HTTP ${response.status}`
       );
     }
 
@@ -244,7 +244,7 @@ async function registerTokenOnServer(token) {
     );
   } catch (error) {
     /*
-     * La aplicación puede continuar funcionando aunque
+     * La aplicaciÃ³n puede continuar funcionando aunque
      * el servidor no permita registrar el token.
      */
     console.error(
@@ -265,7 +265,7 @@ async function initFirebasePush() {
 
   if (!FirebaseMessaging) {
     console.warn(
-      "FirebaseMessaging no está disponible."
+      "FirebaseMessaging no estÃ¡ disponible."
     );
     return false;
   }
@@ -431,10 +431,10 @@ async function notifyUnified({
   tag = null
 }) {
   const notificationTitle =
-    title || "Notificación";
+    title || "NotificaciÃ³n";
 
   const notificationBody =
-    body || "Tiene una nueva notificación.";
+    body || "Tiene una nueva notificaciÃ³n.";
 
   const finalUrl = addDesktopParameter(url);
 
@@ -464,11 +464,11 @@ async function notifyUnified({
       });
 
       console.log(
-        "Notificación local programada."
+        "NotificaciÃ³n local programada."
       );
     } catch (error) {
       console.error(
-        "Error programando notificación local:",
+        "Error programando notificaciÃ³n local:",
         error
       );
     }
@@ -516,7 +516,7 @@ async function registerLocalNotificationListener() {
           }
         } catch (error) {
           console.error(
-            "Error procesando notificación local:",
+            "Error procesando notificaciÃ³n local:",
             error
           );
         }
@@ -576,7 +576,7 @@ async function swNotify({
     );
   } catch (error) {
     console.error(
-      "Error mostrando notificación web:",
+      "Error mostrando notificaciÃ³n web:",
       error
     );
   }
@@ -677,7 +677,7 @@ async function getDocListSignature(source) {
         : [];
 
     console.log(
-      `El proxy detectó ${data?.count || links.length} documentos en ${source.key}.`
+      `El proxy detectÃ³ ${data?.count || links.length} documentos en ${source.key}.`
     );
 
     return {
@@ -721,7 +721,7 @@ function writeSeen(key, values) {
     );
   } catch (error) {
     console.warn(
-      "No se pudo guardar información local:",
+      "No se pudo guardar informaciÃ³n local:",
       error
     );
   }
@@ -729,7 +729,7 @@ function writeSeen(key, values) {
 
 
 /*************************************************
- * COMPROBACIÓN DE CADA FUENTE
+ * COMPROBACIÃ“N DE CADA FUENTE
  *************************************************/
 
 async function checkSource(source) {
@@ -745,11 +745,11 @@ async function checkSource(source) {
 
     /*
      * No actualizamos el almacenamiento si el proxy
-     * respondió sin hash. Esto evita falsas detecciones.
+     * respondiÃ³ sin hash. Esto evita falsas detecciones.
      */
     if (!hash) {
       console.warn(
-        `No se obtuvo un hash válido para ${source.key}.`
+        `No se obtuvo un hash vÃ¡lido para ${source.key}.`
       );
 
       return false;
@@ -759,7 +759,7 @@ async function checkSource(source) {
       localStorage.getItem(hashKey);
 
     /*
-     * Primera ejecución:
+     * Primera ejecuciÃ³n:
      * se almacena el estado actual sin notificar.
      */
     if (!previousHash) {
@@ -789,7 +789,7 @@ async function checkSource(source) {
 
     if (newLinks.length === 0) {
       console.log(
-        `Cambió ${source.key}, pero no se identificaron enlaces nuevos.`
+        `CambiÃ³ ${source.key}, pero no se identificaron enlaces nuevos.`
       );
 
       return false;
@@ -803,7 +803,7 @@ async function checkSource(source) {
       title: source.title,
       body:
         newLinks.length === 1
-          ? "Se publicó un nuevo documento. Tócalo para abrir."
+          ? "Se publicÃ³ un nuevo documento. TÃ³calo para abrir."
           : `Se publicaron ${newLinks.length} documentos nuevos.`,
       url: source.open,
       tag: `tag-${source.key}`
@@ -822,7 +822,7 @@ async function checkSource(source) {
 
 
 /*************************************************
- * COMPROBACIÓN DE TODAS LAS FUENTES
+ * COMPROBACIÃ“N DE TODAS LAS FUENTES
  *************************************************/
 
 let checkInProgress = false;
@@ -830,7 +830,7 @@ let checkInProgress = false;
 async function checkAllSourcesForUpdates() {
   if (checkInProgress) {
     console.log(
-      "Ya existe una comprobación en curso."
+      "Ya existe una comprobaciÃ³n en curso."
     );
 
     return false;
@@ -931,7 +931,7 @@ async function setupBackgroundFetch() {
 
         async (taskId) => {
           console.warn(
-            "Background Fetch agotó el tiempo:",
+            "Background Fetch agotÃ³ el tiempo:",
             taskId
           );
 
@@ -982,7 +982,7 @@ async function setupPeriodicWebSync() {
 
     if (!registration.periodicSync) {
       console.warn(
-        "Periodic Sync no está disponible."
+        "Periodic Sync no estÃ¡ disponible."
       );
 
       return;
@@ -1033,7 +1033,7 @@ async function setupPeriodicWebSync() {
 
 
 /*************************************************
- * NAVEGACIÓN ENTRE PANTALLAS
+ * NAVEGACIÃ“N ENTRE PANTALLAS
  *************************************************/
 
 function goTo(screenId) {
@@ -1118,7 +1118,7 @@ function setupInternalNavigation() {
 
 
 /*************************************************
- * REVISIÓN PERIÓDICA CON LA APP ABIERTA
+ * REVISIÃ“N PERIÃ“DICA CON LA APP ABIERTA
  *************************************************/
 
 let foregroundInterval = null;
@@ -1130,7 +1130,7 @@ function startForegroundChecks() {
 
   /*
    * Durante desarrollo puede usarse un intervalo corto.
-   * En producción se recomienda no consultar cada 30 segundos.
+   * En producciÃ³n se recomienda no consultar cada 30 segundos.
    */
   const intervalMilliseconds =
     isNative
@@ -1140,7 +1140,7 @@ function startForegroundChecks() {
   foregroundInterval = setInterval(
     async () => {
       console.log(
-        "Ejecutando revisión periódica..."
+        "Ejecutando revisiÃ³n periÃ³dica..."
       );
 
       await checkAllSourcesForUpdates();
@@ -1151,7 +1151,7 @@ function startForegroundChecks() {
 
 
 /*************************************************
- * INICIALIZACIÓN
+ * INICIALIZACIÃ“N
  *************************************************/
 
 async function initializeApplication() {
@@ -1165,12 +1165,12 @@ async function initializeApplication() {
 
   if (!isNative && runningOnHttpLan) {
     console.warn(
-      "La aplicación está ejecutándose por HTTP en red local. Service Worker y CORS pueden fallar."
+      "La aplicaciÃ³n estÃ¡ ejecutÃ¡ndose por HTTP en red local. Service Worker y CORS pueden fallar."
     );
   }
 
   console.log(
-    "Inicializando aplicación..."
+    "Inicializando aplicaciÃ³n..."
   );
 
   await registerLocalNotificationListener();
@@ -1186,13 +1186,13 @@ async function initializeApplication() {
 
   if (!notificationGranted) {
     console.warn(
-      "El permiso de notificaciones no fue concedido. La aplicación continuará funcionando sin avisos locales."
+      "El permiso de notificaciones no fue concedido. La aplicaciÃ³n continuarÃ¡ funcionando sin avisos locales."
     );
   }
 
   /*
    * Aunque el permiso sea rechazado, continuamos
-   * configurando navegación y funcionamiento general.
+   * configurando navegaciÃ³n y funcionamiento general.
    */
   await setupBackgroundFetch();
 
@@ -1204,7 +1204,7 @@ async function initializeApplication() {
   await setupPeriodicWebSync();
 
   console.log(
-    "Aplicación inicializada."
+    "AplicaciÃ³n inicializada."
   );
 }
 
@@ -1256,7 +1256,7 @@ window.testNotify = async () => {
   return notifyUnified({
     title: "Prueba",
     body:
-      "Hola desde la aplicación de la Alcaldía de Tuluá.",
+      "Hola desde la aplicaciÃ³n de la AlcaldÃ­a de TuluÃ¡.",
     url: "https://tulua.gov.co",
     tag: `demo-${Date.now()}`
   });
@@ -1335,17 +1335,17 @@ function parseDocLinksFromHTML(
   return result;
 }
 /*************************************************
- * EVENTOS - ¿QUÉ HAY PARA HACER?
+ * EVENTOS - Â¿QUÃ‰ HAY PARA HACER?
  *************************************************/
 
 const EVENTOS = [
   {
     id: "cuarto-milla",
-    nombre: "Cuarto de Milla Tuluá",
+    nombre: "Cuarto de Milla TuluÃ¡",
     categoria: "Deportivo",
     fecha: "17 y 18 de octubre de 2026",
-    lugar: "Tuluá, Valle del Cauca",
-    descripcion: "Evento de velocidad y motores que reúne a los amantes de la adrenalina en pruebas de cuarto de milla.",
+    lugar: "TuluÃ¡, Valle del Cauca",
+    descripcion: "Evento de velocidad y motores que reÃºne a los amantes de la adrenalina en pruebas de cuarto de milla.",
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria12262.jpg"
   },
   {
@@ -1354,51 +1354,51 @@ const EVENTOS = [
     categoria: "Deportivo",
     fecha: "14 y 15 de noviembre de 2026",
     lugar: "Coliseo de Ferias Manuel Victoria Rojas",
-    descripcion: "Exposición de las principales marcas en ropa y elementos para running y actividad física.",
+    descripcion: "ExposiciÃ³n de las principales marcas en ropa y elementos para running y actividad fÃ­sica.",
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11641.png"
   },
   {
     id: "expo-cafes",
-    nombre: "Exposición de Cafés Especiales del Valle del Cauca",
+    nombre: "ExposiciÃ³n de CafÃ©s Especiales del Valle del Cauca",
     categoria: "Cultural",
-    fecha: "Edición anual (última: 25 y 26 de abril de 2026)",
-    lugar: "Supercentro Tuluá",
-    descripcion: "Feria regional que reúne caficultores y productores para destacar los cafés de especialidad del Valle del Cauca.",
+    fecha: "EdiciÃ³n anual (Ãºltima: 25 y 26 de abril de 2026)",
+    lugar: "Supercentro TuluÃ¡",
+    descripcion: "Feria regional que reÃºne caficultores y productores para destacar los cafÃ©s de especialidad del Valle del Cauca.",
     imagen: null
   },
   {
     id: "media-maraton",
-    nombre: "Media Maratón Tuluá",
+    nombre: "Media MaratÃ³n TuluÃ¡",
     categoria: "Deportivo",
     fecha: "15 de noviembre de 2026",
     lugar: "Coliseo de Ferias Manuel Victoria Rojas",
-    descripcion: "Competencia atlética de 5, 10 y 21 km que promueve la vida saludable, el turismo y la economía local.",
+    descripcion: "Competencia atlÃ©tica de 5, 10 y 21 km que promueve la vida saludable, el turismo y la economÃ­a local.",
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11764.jpg"
   },
   {
     id: "rotary-run",
-    nombre: "Carrera Atlética Rotary Run",
+    nombre: "Carrera AtlÃ©tica Rotary Run",
     categoria: "Deportivo",
-    fecha: "Edición anual (última: 19 de abril de 2026)",
-    lugar: "Tuluá, Valle del Cauca",
-    descripcion: "Carrera solidaria e inclusiva organizada por el Club Rotario El Lago, con categorías de 3K, 5K y 10.5K.",
+    fecha: "EdiciÃ³n anual (Ãºltima: 19 de abril de 2026)",
+    lugar: "TuluÃ¡, Valle del Cauca",
+    descripcion: "Carrera solidaria e inclusiva organizada por el Club Rotario El Lago, con categorÃ­as de 3K, 5K y 10.5K.",
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11581.jpg"
   },
   {
     id: "feria-tulua",
-    nombre: "Feria de Tuluá",
+    nombre: "Feria de TuluÃ¡",
     categoria: "Cultural",
     fecha: "Fiesta tradicional anual",
     lugar: "Coliseo de Ferias Manuel Victoria Rojas",
-    descripcion: "La fiesta cultural más importante del centro del Valle del Cauca, con desfiles, exposición equina, ganadera y pueblito artesanal.",
+    descripcion: "La fiesta cultural mÃ¡s importante del centro del Valle del Cauca, con desfiles, exposiciÃ³n equina, ganadera y pueblito artesanal.",
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria12029.jpg"
   },
   {
     id: "feria-agroturismo",
     nombre: "Feria Agroturismo y Negocios Sostenibles",
     categoria: "Empresarial",
-    fecha: "Próxima fecha por confirmar",
-    lugar: "Supercentro Tuluá",
+    fecha: "PrÃ³xima fecha por confirmar",
+    lugar: "Supercentro TuluÃ¡",
     descripcion: "Evento que conecta productores del campo, empresarios y emprendedores para impulsar el turismo sostenible.",
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11473.jpg"
   },
@@ -1408,16 +1408,16 @@ const EVENTOS = [
     categoria: "Empresarial",
     fecha: "7 al 11 de septiembre de 2026",
     lugar: "Campus Universitario UCEVA",
-    descripcion: "Espacio de conexión e innovación para estudiantes, profesionales, emprendedores y líderes de la región.",
+    descripcion: "Espacio de conexiÃ³n e innovaciÃ³n para estudiantes, profesionales, emprendedores y lÃ­deres de la regiÃ³n.",
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11584.jpg"
   },
   {
     id: "santa-cecilia",
-    nombre: "Festival de Música Santa Cecilia",
+    nombre: "Festival de MÃºsica Santa Cecilia",
     categoria: "Cultural",
     fecha: "19 al 22 de noviembre de 2026",
-    lugar: "Casa de la Cultura, Tuluá",
-    descripcion: "Tradicional festival de música andina, clásica y popular en homenaje a la patrona de los músicos.",
+    lugar: "Casa de la Cultura, TuluÃ¡",
+    descripcion: "Tradicional festival de mÃºsica andina, clÃ¡sica y popular en homenaje a la patrona de los mÃºsicos.",
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11604.jpg"
   }
 ];
@@ -1449,23 +1449,34 @@ function alternarFavorito(id) {
   renderEventos();
 }
 
-function generarICS(evento) {
-  const texto = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "BEGIN:VEVENT",
-    "SUMMARY:" + evento.nombre,
-    "DESCRIPTION:" + evento.descripcion,
-    "LOCATION:" + evento.lugar,
-    "END:VEVENT",
-    "END:VCALENDAR"
-  ].join("\r\n");
+async function agregarACalendarioNativo(evento) {
+  try {
+    const plugin = window.Capacitor && window.Capacitor.Plugins
+      ? window.Capacitor.Plugins.CapacitorCalendar
+      : null;
 
-  return "data:text/calendar;charset=utf8," + encodeURIComponent(texto);
+    if (!plugin) {
+      alert("La función de calendario no está disponible en este dispositivo.");
+      return;
+    }
+
+    const inicio = Date.now() + 60 * 60 * 1000;
+    const fin = inicio + 2 * 60 * 60 * 1000;
+
+    await plugin.createEventWithPrompt({
+      title: evento.nombre,
+      location: evento.lugar,
+      startDate: inicio,
+      endDate: fin,
+      notes: evento.descripcion
+    });
+  } catch (e) {
+    console.error("No se pudo agregar al calendario:", e);
+  }
 }
 
 function generarLinkMapa(evento) {
-  const query = encodeURIComponent(evento.lugar + ", Tuluá, Valle del Cauca, Colombia");
+  const query = encodeURIComponent(evento.lugar + ", TuluÃ¡, Valle del Cauca, Colombia");
   return "https://maps.apple.com/?q=" + query;
 }
 
@@ -1484,7 +1495,7 @@ function renderEventos() {
 
   if (lista.length === 0) {
     contenedor.innerHTML =
-      '<p class="eventos-vacio">Aún no tienes eventos favoritos. Toca la estrella de un evento para guardarlo aquí.</p>';
+      '<p class="eventos-vacio">AÃºn no tienes eventos favoritos. Toca la estrella de un evento para guardarlo aquÃ­.</p>';
     return;
   }
 
@@ -1496,19 +1507,19 @@ function renderEventos() {
     card.innerHTML =
       (evento.imagen
         ? '<img class="evento-img" src="' + evento.imagen + '" alt="' + evento.nombre + '" />'
-        : '<div class="evento-img evento-img-placeholder">🎉</div>') +
+        : '<div class="evento-img evento-img-placeholder">ðŸŽ‰</div>') +
       '<div class="evento-body">' +
         '<span class="evento-categoria">' + evento.categoria + '</span>' +
         '<h3 class="evento-nombre">' + evento.nombre + '</h3>' +
-        '<p class="evento-fecha">📅 ' + evento.fecha + '</p>' +
-        '<p class="evento-lugar">📍 ' + evento.lugar + '</p>' +
+        '<p class="evento-fecha">ðŸ“… ' + evento.fecha + '</p>' +
+        '<p class="evento-lugar">ðŸ“ ' + evento.lugar + '</p>' +
         '<p class="evento-desc">' + evento.descripcion + '</p>' +
         '<div class="evento-acciones">' +
           '<button type="button" class="btn-evento btn-favorito" data-id="' + evento.id + '">' +
-            (esFavorito ? "⭐ Guardado" : "☆ Favorito") +
+            (esFavorito ? "â­ Guardado" : "â˜† Favorito") +
           '</button>' +
-          '<a class="btn-evento" href="' + generarLinkMapa(evento) + '" target="_blank" rel="noopener noreferrer">📍 Cómo llegar</a>' +
-          '<a class="btn-evento" href="' + generarICS(evento) + '" target="_blank" rel="noopener noreferrer">📅 Agregar a calendario</a>' +
+          '<a class="btn-evento" href="' + generarLinkMapa(evento) + '" target="_blank" rel="noopener noreferrer">ðŸ“ CÃ³mo llegar</a>' +
+          '<button type="button" class="btn-evento btn-calendario" data-id="' + evento.id + '">Agregar a calendario</button>' +
         '</div>' +
       '</div>';
 
@@ -1531,9 +1542,21 @@ document.addEventListener("DOMContentLoaded", () => {
       soloFavoritos = !soloFavoritos;
       btnFiltro.classList.toggle("activo", soloFavoritos);
       btnFiltro.textContent = soloFavoritos
-        ? "⭐ Ver todos"
-        : "⭐ Ver mis favoritos";
+        ? "â­ Ver todos"
+        : "â­ Ver mis favoritos";
       renderEventos();
     });
+  }
+});
+
+
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".btn-calendario");
+  if (!btn) return;
+
+  const evento = EVENTOS.find((ev) => ev.id === btn.dataset.id);
+  if (evento) {
+    agregarACalendarioNativo(evento);
   }
 });
