@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 
 <plist version="1.0">
@@ -7,7 +7,9 @@
 	<string>es</string>
 
 	<key>CFBundleDisplayName</key>
-	<string>Alcaldía Tuluá</string>
+	<string>AlcaldÃ­a TuluÃ¡</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Esta aplicacion necesita acceso al calendario para permitirte agregar eventos y festividades de Tulua directamente a tu calendario personal.</string>
 
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
