@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -123,7 +123,7 @@
       </nav>
 
       <footer>
-        <p>Copyright 2025 - Todos los derechos reservados</p>
+        <p>Copyright 2026 - Todos los derechos reservados</p>
       </footer>
 
       <div class="bottom-curve" aria-hidden="true"></div>
@@ -172,15 +172,14 @@
           <span class="label">PQRSDF</span>
         </button>
 
-        <a
-          class="card small-card link-card"
-          href="https://tulua.gov.co/calendario/"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          class="card small-card"
+          data-target="eventos"
         >
           <span class="icon" aria-hidden="true">🎉</span>
           <span class="label">¿QUÉ HAY PARA HACER?</span>
-        </a>
+        </button>
 
         <a
           class="card small-card link-card"
@@ -253,6 +252,47 @@
           <span class="label">Consultar trámite</span>
         </a>
       </div>
+
+      <button
+        type="button"
+        class="btn-ingresar btn-volver"
+        data-target="menu"
+      >
+        <span aria-hidden="true">⬅️</span>
+        Volver
+      </button>
+    </section>
+
+    <!-- ========== EVENTOS ========== -->
+    <section
+      id="eventos"
+      class="screen"
+      aria-labelledby="eventos-title"
+    >
+      <header class="menu-hero">
+        <div class="menu-copy">
+          <h2 id="eventos-title">¿Qué hay para hacer?</h2>
+          <p>Festividades y eventos de Tuluá</p>
+        </div>
+
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="header-logo"
+        />
+      </header>
+
+      <div class="eventos-toolbar">
+        <button
+          type="button"
+          id="btn-filtro-favoritos"
+          class="chip-filtro"
+        >
+          ⭐ Ver mis favoritos
+        </button>
+      </div>
+
+      <div id="eventos-grid" class="eventos-grid"></div>
 
       <button
         type="button"
