@@ -5,9 +5,15 @@ on:
 
 jobs:
   build:
-    runs-on: macos-26
+    runs-on: macos-15
 
     steps:
+      - name: Select Xcode 26
+        run: |
+          XC=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          echo "Usando $XC"
+          sudo xcode-select -s "$XC"
+          xcodebuild -version
       - name: Checkout repository
         uses: actions/checkout@v4
 
