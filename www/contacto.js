@@ -9,7 +9,7 @@ const CONTACTO = {
   codigoPostal: "763022",
   telefono: "+576022339300",
   telefonoTexto: "+57 (602) 233 9300",
-  correo: "turismo@tulua.gov.co",
+  correo: "servicioalciudadano@tulua.gov.co",
   horarioNota: "Línea de anticorrupción y atención al ciudadano"
 };
 
