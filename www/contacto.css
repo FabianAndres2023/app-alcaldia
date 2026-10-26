@@ -1,0 +1,61 @@
+/* ==================================================
+   ATENCIÓN AL CIUDADANO - CONTACTO
+================================================== */
+
+.contacto-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.contacto-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(0, 34, 68, 0.12);
+  padding: 16px 18px 18px;
+}
+
+.contacto-titulo {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--blue-2, #003b73);
+}
+
+.contacto-linea {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.contacto-nota {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.contacto-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.btn-contacto {
+  flex: 1 1 auto;
+  text-align: center;
+  border: none;
+  background: #f0f4fa;
+  color: var(--blue-2, #005bbb);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 11px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-contacto:active {
+  transform: scale(0.98);
+}

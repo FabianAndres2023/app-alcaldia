@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -26,6 +26,7 @@
   <link rel="icon" href="logo.png" />
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="contacto.css" />
 </head>
 
 <body>
@@ -190,6 +191,15 @@
           <span class="icon" aria-hidden="true">📍</span>
           <span class="label">¿QUÉ HAY PARA VISITAR?</span>
         </a>
+
+        <button
+          type="button"
+          class="card small-card"
+          data-target="contacto"
+        >
+          <span class="icon" aria-hidden="true">🏛️</span>
+          <span class="label">ATENCIÓN AL CIUDADANO</span>
+        </button>
       </div>
 
       <button
@@ -304,9 +314,41 @@
       </button>
     </section>
 
+    <!-- ========== ATENCIÓN AL CIUDADANO ========== -->
+    <section
+      id="contacto"
+      class="screen"
+      aria-labelledby="contacto-title"
+    >
+      <header class="menu-hero">
+        <div class="menu-copy">
+          <h2 id="contacto-title">Atención al ciudadano</h2>
+          <p>Contacta a la Alcaldía de Tuluá</p>
+        </div>
+
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="header-logo"
+        />
+      </header>
+
+      <div id="contacto-lista" class="contacto-lista"></div>
+
+      <button
+        type="button"
+        class="btn-ingresar btn-volver"
+        data-target="menu"
+      >
+        <span aria-hidden="true">⬅️</span>
+        Volver
+      </button>
+    </section>
+
   </main>
 
   <script src="app.js" defer></script>
+  <script src="contacto.js" defer></script>
 
   <script>
     window.addEventListener("load", function () {
