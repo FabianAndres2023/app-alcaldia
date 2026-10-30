@@ -1,7 +1,7 @@
-﻿"use strict";
+"use strict";
 
 /*************************************************
- * CONFIGURACIÃ“N GENERAL DE CAPACITOR
+ * CONFIGURACIÓN GENERAL DE CAPACITOR
  *************************************************/
 
 const CapacitorRuntime = window.Capacitor || {};
@@ -18,7 +18,7 @@ const isNative =
     : platform !== "web";
 
 console.log("Plataforma detectada:", platform);
-console.log("EjecuciÃ³n nativa:", isNative);
+console.log("Ejecución nativa:", isNative);
 
 
 /*************************************************
@@ -149,13 +149,13 @@ async function registerFirebaseListeners() {
       "messageReceived",
       async (message) => {
         console.log(
-          "NotificaciÃ³n Firebase recibida:",
+          "Notificación Firebase recibida:",
           message
         );
 
         const title =
           message?.notification?.title ||
-          "NotificaciÃ³n";
+          "Notificación";
 
         const body =
           message?.notification?.body ||
@@ -180,7 +180,7 @@ async function registerFirebaseListeners() {
       async (event) => {
         try {
           console.log(
-            "NotificaciÃ³n Firebase seleccionada:",
+            "Notificación Firebase seleccionada:",
             event
           );
 
@@ -196,7 +196,7 @@ async function registerFirebaseListeners() {
           }
         } catch (error) {
           console.error(
-            "Error procesando la notificaciÃ³n:",
+            "Error procesando la notificación:",
             error
           );
         }
@@ -216,7 +216,7 @@ async function registerFirebaseListeners() {
 async function registerTokenOnServer(token) {
   if (!token) {
     console.warn(
-      "No se recibiÃ³ un token vÃ¡lido de Firebase."
+      "No se recibió un token válido de Firebase."
     );
     return;
   }
@@ -235,7 +235,7 @@ async function registerTokenOnServer(token) {
 
     if (!response.ok) {
       throw new Error(
-        `El servidor respondiÃ³ HTTP ${response.status}`
+        `El servidor respondió HTTP ${response.status}`
       );
     }
 
@@ -244,7 +244,7 @@ async function registerTokenOnServer(token) {
     );
   } catch (error) {
     /*
-     * La aplicaciÃ³n puede continuar funcionando aunque
+     * La aplicación puede continuar funcionando aunque
      * el servidor no permita registrar el token.
      */
     console.error(
@@ -265,7 +265,7 @@ async function initFirebasePush() {
 
   if (!FirebaseMessaging) {
     console.warn(
-      "FirebaseMessaging no estÃ¡ disponible."
+      "FirebaseMessaging no está disponible."
     );
     return false;
   }
@@ -431,10 +431,10 @@ async function notifyUnified({
   tag = null
 }) {
   const notificationTitle =
-    title || "NotificaciÃ³n";
+    title || "Notificación";
 
   const notificationBody =
-    body || "Tiene una nueva notificaciÃ³n.";
+    body || "Tiene una nueva notificación.";
 
   const finalUrl = addDesktopParameter(url);
 
@@ -464,11 +464,11 @@ async function notifyUnified({
       });
 
       console.log(
-        "NotificaciÃ³n local programada."
+        "Notificación local programada."
       );
     } catch (error) {
       console.error(
-        "Error programando notificaciÃ³n local:",
+        "Error programando notificación local:",
         error
       );
     }
@@ -516,7 +516,7 @@ async function registerLocalNotificationListener() {
           }
         } catch (error) {
           console.error(
-            "Error procesando notificaciÃ³n local:",
+            "Error procesando notificación local:",
             error
           );
         }
@@ -576,7 +576,7 @@ async function swNotify({
     );
   } catch (error) {
     console.error(
-      "Error mostrando notificaciÃ³n web:",
+      "Error mostrando notificación web:",
       error
     );
   }
@@ -677,7 +677,7 @@ async function getDocListSignature(source) {
         : [];
 
     console.log(
-      `El proxy detectÃ³ ${data?.count || links.length} documentos en ${source.key}.`
+      `El proxy detectó ${data?.count || links.length} documentos en ${source.key}.`
     );
 
     return {
@@ -721,7 +721,7 @@ function writeSeen(key, values) {
     );
   } catch (error) {
     console.warn(
-      "No se pudo guardar informaciÃ³n local:",
+      "No se pudo guardar información local:",
       error
     );
   }
@@ -729,7 +729,7 @@ function writeSeen(key, values) {
 
 
 /*************************************************
- * COMPROBACIÃ“N DE CADA FUENTE
+ * COMPROBACIÓN DE CADA FUENTE
  *************************************************/
 
 async function checkSource(source) {
@@ -745,11 +745,11 @@ async function checkSource(source) {
 
     /*
      * No actualizamos el almacenamiento si el proxy
-     * respondiÃ³ sin hash. Esto evita falsas detecciones.
+     * respondió sin hash. Esto evita falsas detecciones.
      */
     if (!hash) {
       console.warn(
-        `No se obtuvo un hash vÃ¡lido para ${source.key}.`
+        `No se obtuvo un hash válido para ${source.key}.`
       );
 
       return false;
@@ -759,7 +759,7 @@ async function checkSource(source) {
       localStorage.getItem(hashKey);
 
     /*
-     * Primera ejecuciÃ³n:
+     * Primera ejecución:
      * se almacena el estado actual sin notificar.
      */
     if (!previousHash) {
@@ -789,7 +789,7 @@ async function checkSource(source) {
 
     if (newLinks.length === 0) {
       console.log(
-        `CambiÃ³ ${source.key}, pero no se identificaron enlaces nuevos.`
+        `Cambió ${source.key}, pero no se identificaron enlaces nuevos.`
       );
 
       return false;
@@ -803,7 +803,7 @@ async function checkSource(source) {
       title: source.title,
       body:
         newLinks.length === 1
-          ? "Se publicÃ³ un nuevo documento. TÃ³calo para abrir."
+          ? "Se publicó un nuevo documento. Tócalo para abrir."
           : `Se publicaron ${newLinks.length} documentos nuevos.`,
       url: source.open,
       tag: `tag-${source.key}`
@@ -822,7 +822,7 @@ async function checkSource(source) {
 
 
 /*************************************************
- * COMPROBACIÃ“N DE TODAS LAS FUENTES
+ * COMPROBACIÓN DE TODAS LAS FUENTES
  *************************************************/
 
 let checkInProgress = false;
@@ -830,7 +830,7 @@ let checkInProgress = false;
 async function checkAllSourcesForUpdates() {
   if (checkInProgress) {
     console.log(
-      "Ya existe una comprobaciÃ³n en curso."
+      "Ya existe una comprobación en curso."
     );
 
     return false;
@@ -931,7 +931,7 @@ async function setupBackgroundFetch() {
 
         async (taskId) => {
           console.warn(
-            "Background Fetch agotÃ³ el tiempo:",
+            "Background Fetch agotó el tiempo:",
             taskId
           );
 
@@ -982,7 +982,7 @@ async function setupPeriodicWebSync() {
 
     if (!registration.periodicSync) {
       console.warn(
-        "Periodic Sync no estÃ¡ disponible."
+        "Periodic Sync no está disponible."
       );
 
       return;
@@ -1033,7 +1033,7 @@ async function setupPeriodicWebSync() {
 
 
 /*************************************************
- * NAVEGACIÃ“N ENTRE PANTALLAS
+ * NAVEGACIÓN ENTRE PANTALLAS
  *************************************************/
 
 function goTo(screenId) {
@@ -1118,7 +1118,7 @@ function setupInternalNavigation() {
 
 
 /*************************************************
- * REVISIÃ“N PERIÃ“DICA CON LA APP ABIERTA
+ * REVISIÓN PERIÓDICA CON LA APP ABIERTA
  *************************************************/
 
 let foregroundInterval = null;
@@ -1130,7 +1130,7 @@ function startForegroundChecks() {
 
   /*
    * Durante desarrollo puede usarse un intervalo corto.
-   * En producciÃ³n se recomienda no consultar cada 30 segundos.
+   * En producción se recomienda no consultar cada 30 segundos.
    */
   const intervalMilliseconds =
     isNative
@@ -1140,7 +1140,7 @@ function startForegroundChecks() {
   foregroundInterval = setInterval(
     async () => {
       console.log(
-        "Ejecutando revisiÃ³n periÃ³dica..."
+        "Ejecutando revisión periódica..."
       );
 
       await checkAllSourcesForUpdates();
@@ -1151,7 +1151,7 @@ function startForegroundChecks() {
 
 
 /*************************************************
- * INICIALIZACIÃ“N
+ * INICIALIZACIÓN
  *************************************************/
 
 async function initializeApplication() {
@@ -1165,12 +1165,12 @@ async function initializeApplication() {
 
   if (!isNative && runningOnHttpLan) {
     console.warn(
-      "La aplicaciÃ³n estÃ¡ ejecutÃ¡ndose por HTTP en red local. Service Worker y CORS pueden fallar."
+      "La aplicación está ejecutándose por HTTP en red local. Service Worker y CORS pueden fallar."
     );
   }
 
   console.log(
-    "Inicializando aplicaciÃ³n..."
+    "Inicializando aplicación..."
   );
 
   await registerLocalNotificationListener();
@@ -1186,13 +1186,13 @@ async function initializeApplication() {
 
   if (!notificationGranted) {
     console.warn(
-      "El permiso de notificaciones no fue concedido. La aplicaciÃ³n continuarÃ¡ funcionando sin avisos locales."
+      "El permiso de notificaciones no fue concedido. La aplicación continuará funcionando sin avisos locales."
     );
   }
 
   /*
    * Aunque el permiso sea rechazado, continuamos
-   * configurando navegaciÃ³n y funcionamiento general.
+   * configurando navegación y funcionamiento general.
    */
   await setupBackgroundFetch();
 
@@ -1204,7 +1204,7 @@ async function initializeApplication() {
   await setupPeriodicWebSync();
 
   console.log(
-    "AplicaciÃ³n inicializada."
+    "Aplicación inicializada."
   );
 }
 
@@ -1256,7 +1256,7 @@ window.testNotify = async () => {
   return notifyUnified({
     title: "Prueba",
     body:
-      "Hola desde la aplicaciÃ³n de la AlcaldÃ­a de TuluÃ¡.",
+      "Hola desde la aplicación de la Alcaldía de Tuluá.",
     url: "https://tulua.gov.co",
     tag: `demo-${Date.now()}`
   });
@@ -1341,21 +1341,14 @@ function parseDocLinksFromHTML(
 
 const EVENTOS = [
   {
-    id: "cuarto-milla",
-    nombre: "Cuarto de Milla Tuluá",
-    categoria: "Deportivo",
-    fecha: "17 y 18 de octubre de 2026",
-    lugar: "Tuluá, Valle del Cauca",
-    descripcion: "Evento de velocidad y motores que reúne a los amantes de la adrenalina en pruebas de cuarto de milla.",
-    imagen: "https://tulua.gov.co/info/tulua_se/media/galeria12262.jpg"
-  },
-  {
     id: "expo-feria-deportiva",
     nombre: "Expo Feria Deportiva",
     categoria: "Deportivo",
     fecha: "14 y 15 de noviembre de 2026",
     lugar: "Coliseo de Ferias Manuel Victoria Rojas",
     descripcion: "Exposición de las principales marcas en ropa y elementos para running y actividad física.",
+    inicio: Date.UTC(2026, 10, 14, 13, 0),
+    fin: Date.UTC(2026, 10, 15, 23, 0),
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11641.png"
   },
   {
@@ -1374,6 +1367,8 @@ const EVENTOS = [
     fecha: "15 de noviembre de 2026",
     lugar: "Coliseo de Ferias Manuel Victoria Rojas",
     descripcion: "Competencia atlética de 5, 10 y 21 km que promueve la vida saludable, el turismo y la economía local.",
+    inicio: Date.UTC(2026, 10, 15, 13, 0),
+    fin: Date.UTC(2026, 10, 15, 23, 0),
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11764.jpg"
   },
   {
@@ -1404,21 +1399,14 @@ const EVENTOS = [
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11473.jpg"
   },
   {
-    id: "networking-summit",
-    nombre: "UCEVA Networking Summit",
-    categoria: "Empresarial",
-    fecha: "7 al 11 de septiembre de 2026",
-    lugar: "Campus Universitario UCEVA",
-    descripcion: "Espacio de conexión e innovación para estudiantes, profesionales, emprendedores y líderes de la región.",
-    imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11584.jpg"
-  },
-  {
     id: "santa-cecilia",
     nombre: "Festival de Música Santa Cecilia",
     categoria: "Cultural",
     fecha: "19 al 22 de noviembre de 2026",
     lugar: "Casa de la Cultura, Tuluá",
     descripcion: "Tradicional festival de música andina, clásica y popular en homenaje a la patrona de los músicos.",
+    inicio: Date.UTC(2026, 10, 19, 13, 0),
+    fin: Date.UTC(2026, 10, 22, 23, 0),
     imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11604.jpg"
   }
 ];
@@ -1466,8 +1454,8 @@ async function agregarACalendarioNativo(evento) {
       return;
     }
 
-    const inicio = Date.now() + 60 * 60 * 1000;
-    const fin = inicio + 2 * 60 * 60 * 1000;
+    const inicio = evento.inicio || Date.now() + 60 * 60 * 1000;
+    const fin = evento.fin || inicio + 2 * 60 * 60 * 1000;
 
     await plugin.createEventWithPrompt({
       title: evento.nombre,
