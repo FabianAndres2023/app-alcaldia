@@ -1,0 +1,147 @@
+/* ==================================================
+   TURISMO - ¿QUÉ HAY PARA VISITAR?
+   y MIS FAVORITOS
+================================================== */
+
+.tur-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 0;
+}
+
+.tur-buscar {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1rem;
+  color: var(--text, #002244);
+  background: #fff;
+  border: 2px solid #d5e0f0;
+  border-radius: 12px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tur-buscar:focus {
+  outline: none;
+  border-color: var(--blue-1, #005bbb);
+}
+
+.tur-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tur-acciones-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tur-contador {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.tur-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.tur-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(0, 34, 68, 0.12);
+  overflow: hidden;
+  text-align: left;
+}
+
+.tur-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px 16px 18px;
+}
+
+.tur-nombre {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--blue-2, #004c99);
+}
+
+.tur-desc {
+  margin: 4px 0 8px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: #555;
+}
+
+.tur-dato {
+  margin: 3px 0;
+  font-size: 0.85rem;
+  color: #444;
+  overflow-wrap: anywhere;
+}
+
+.tur-body .evento-acciones {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.fav-titulo {
+  margin: 22px 16px 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-align: left;
+  color: var(--blue-2, #004c99);
+}
+
+.fav-vacio {
+  margin: 0;
+  padding: 30px 20px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.fav-vacio[hidden] {
+  display: none;
+}
+
+/* ==================================================
+   TARJETAS DEL MENÚ SOBRE LA CABECERA
+   (evita que la cabecera tape la parte superior)
+================================================== */
+
+.card-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.tur-correo {
+  font-size: 0.78rem;
+}
+
+/* ==================================================
+   TABLETAS (iPad)
+================================================== */
+
+@media (min-width: 768px) {
+  .small-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 760px;
+  }
+
+  .tur-toolbar {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

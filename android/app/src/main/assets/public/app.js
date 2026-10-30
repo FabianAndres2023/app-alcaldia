@@ -1334,3 +1334,215 @@ function parseDocLinksFromHTML(
 
   return result;
 }
+
+/*************************************************
+ * EVENTOS - ¿QUÉ HAY PARA HACER?
+ *************************************************/
+
+const EVENTOS = [
+  {
+    id: "expo-feria-deportiva",
+    nombre: "Expo Feria Deportiva",
+    categoria: "Deportivo",
+    fecha: "14 y 15 de noviembre de 2026",
+    lugar: "Coliseo de Ferias Manuel Victoria Rojas",
+    descripcion: "Exposición de las principales marcas en ropa y elementos para running y actividad física.",
+    inicio: Date.UTC(2026, 10, 14, 13, 0),
+    fin: Date.UTC(2026, 10, 15, 23, 0),
+    imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11641.png"
+  },
+  {
+    id: "expo-cafes",
+    nombre: "Exposición de Cafés Especiales del Valle del Cauca",
+    categoria: "Cultural",
+    fecha: "Edición anual (última: 25 y 26 de abril de 2026)",
+    lugar: "Supercentro Tuluá",
+    descripcion: "Feria regional que reúne caficultores y productores para destacar los cafés de especialidad del Valle del Cauca.",
+    imagen: null
+  },
+  {
+    id: "media-maraton",
+    nombre: "Media Maratón Tuluá",
+    categoria: "Deportivo",
+    fecha: "15 de noviembre de 2026",
+    lugar: "Coliseo de Ferias Manuel Victoria Rojas",
+    descripcion: "Competencia atlética de 5, 10 y 21 km que promueve la vida saludable, el turismo y la economía local.",
+    inicio: Date.UTC(2026, 10, 15, 13, 0),
+    fin: Date.UTC(2026, 10, 15, 23, 0),
+    imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11764.jpg"
+  },
+  {
+    id: "rotary-run",
+    nombre: "Carrera Atlética Rotary Run",
+    categoria: "Deportivo",
+    fecha: "Edición anual (última: 19 de abril de 2026)",
+    lugar: "Tuluá, Valle del Cauca",
+    descripcion: "Carrera solidaria e inclusiva organizada por el Club Rotario El Lago, con categorías de 3K, 5K y 10.5K.",
+    imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11581.jpg"
+  },
+  {
+    id: "feria-tulua",
+    nombre: "Feria de Tuluá",
+    categoria: "Cultural",
+    fecha: "Fiesta tradicional anual",
+    lugar: "Coliseo de Ferias Manuel Victoria Rojas",
+    descripcion: "La fiesta cultural más importante del centro del Valle del Cauca, con desfiles, exposición equina, ganadera y pueblito artesanal.",
+    imagen: "https://tulua.gov.co/info/tulua_se/media/galeria12029.jpg"
+  },
+  {
+    id: "feria-agroturismo",
+    nombre: "Feria Agroturismo y Negocios Sostenibles",
+    categoria: "Empresarial",
+    fecha: "Próxima fecha por confirmar",
+    lugar: "Supercentro Tuluá",
+    descripcion: "Evento que conecta productores del campo, empresarios y emprendedores para impulsar el turismo sostenible.",
+    imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11473.jpg"
+  },
+  {
+    id: "santa-cecilia",
+    nombre: "Festival de Música Santa Cecilia",
+    categoria: "Cultural",
+    fecha: "19 al 22 de noviembre de 2026",
+    lugar: "Casa de la Cultura, Tuluá",
+    descripcion: "Tradicional festival de música andina, clásica y popular en homenaje a la patrona de los músicos.",
+    inicio: Date.UTC(2026, 10, 19, 13, 0),
+    fin: Date.UTC(2026, 10, 22, 23, 0),
+    imagen: "https://tulua.gov.co/info/tulua_se/media/galeria11604.jpg"
+  }
+];
+
+function obtenerFavoritos() {
+  try {
+    const raw = localStorage.getItem("eventos_favoritos");
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function guardarFavoritos(favoritos) {
+  localStorage.setItem("eventos_favoritos", JSON.stringify(favoritos));
+}
+
+function alternarFavorito(id) {
+  const favoritos = obtenerFavoritos();
+  const index = favoritos.indexOf(id);
+
+  if (index >= 0) {
+    favoritos.splice(index, 1);
+  } else {
+    favoritos.push(id);
+  }
+
+  guardarFavoritos(favoritos);
+  renderEventos();
+}
+
+function generarLinkMapa(evento) {
+  const query = encodeURIComponent(evento.lugar + ", Tuluá, Valle del Cauca, Colombia");
+  return "https://maps.apple.com/?q=" + query;
+}
+
+async function agregarACalendarioNativo(evento) {
+  try {
+    const plugin = window.Capacitor && window.Capacitor.Plugins
+      ? window.Capacitor.Plugins.CapacitorCalendar
+      : null;
+
+    if (!plugin) {
+      alert("La función de calendario no está disponible en este dispositivo.");
+      return;
+    }
+
+    const inicio = evento.inicio || Date.now() + 60 * 60 * 1000;
+    const fin = evento.fin || inicio + 2 * 60 * 60 * 1000;
+
+    await plugin.createEventWithPrompt({
+      title: evento.nombre,
+      location: evento.lugar,
+      startDate: inicio,
+      endDate: fin,
+      notes: evento.descripcion
+    });
+  } catch (e) {
+    console.error("No se pudo agregar al calendario:", e);
+  }
+}
+
+let soloFavoritos = false;
+
+function renderEventos() {
+  const contenedor = document.getElementById("eventos-grid");
+  if (!contenedor) return;
+
+  const favoritos = obtenerFavoritos();
+  const lista = soloFavoritos
+    ? EVENTOS.filter((e) => favoritos.includes(e.id))
+    : EVENTOS;
+
+  contenedor.innerHTML = "";
+
+  if (lista.length === 0) {
+    contenedor.innerHTML =
+      '<p class="eventos-vacio">Aún no tienes eventos favoritos. Toca la estrella de un evento para guardarlo aquí.</p>';
+    return;
+  }
+
+  lista.forEach((evento) => {
+    const esFavorito = favoritos.includes(evento.id);
+    const card = document.createElement("article");
+    card.className = "evento-card";
+
+    card.innerHTML =
+      (evento.imagen
+        ? '<img class="evento-img" src="' + evento.imagen + '" alt="' + evento.nombre + '" />'
+        : '<div class="evento-img evento-img-placeholder">🎉</div>') +
+      '<div class="evento-body">' +
+        '<span class="evento-categoria">' + evento.categoria + '</span>' +
+        '<h3 class="evento-nombre">' + evento.nombre + '</h3>' +
+        '<p class="evento-fecha">📅 ' + evento.fecha + '</p>' +
+        '<p class="evento-lugar">📍 ' + evento.lugar + '</p>' +
+        '<p class="evento-desc">' + evento.descripcion + '</p>' +
+        '<div class="evento-acciones">' +
+          '<button type="button" class="btn-evento btn-favorito" data-id="' + evento.id + '">' +
+            (esFavorito ? "⭐ Guardado" : "☆ Favorito") +
+          '</button>' +
+          '<a class="btn-evento" href="' + generarLinkMapa(evento) + '" target="_blank" rel="noopener noreferrer">📍 Cómo llegar</a>' +
+          '<button type="button" class="btn-evento btn-calendario" data-id="' + evento.id + '">📅 Agregar a calendario</button>' +
+        '</div>' +
+      '</div>';
+
+    contenedor.appendChild(card);
+  });
+
+  contenedor.querySelectorAll(".btn-favorito").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      alternarFavorito(btn.dataset.id);
+    });
+  });
+
+  contenedor.querySelectorAll(".btn-calendario").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const evento = EVENTOS.find((ev) => ev.id === btn.dataset.id);
+      if (evento) {
+        agregarACalendarioNativo(evento);
+      }
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderEventos();
+
+  const btnFiltro = document.getElementById("btn-filtro-favoritos");
+  if (btnFiltro) {
+    btnFiltro.addEventListener("click", () => {
+      soloFavoritos = !soloFavoritos;
+      btnFiltro.classList.toggle("activo", soloFavoritos);
+      btnFiltro.textContent = soloFavoritos
+        ? "⭐ Ver todos"
+        : "⭐ Ver mis favoritos";
+      renderEventos();
+    });
+  }
+});

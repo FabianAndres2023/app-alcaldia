@@ -7,7 +7,7 @@ buildscript {
         jcenter() // opcional, ayuda con librerías antiguas
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.7.2'
+        classpath 'com.android.tools.build:gradle:8.9.1'
         classpath 'com.google.gms:google-services:4.4.4'  // ✅ Última versión de Firebase
     }
 }
@@ -16,6 +16,12 @@ apply from: "variables.gradle"
 
 // ✅ Garantiza que todas las dependencias (Firebase, AndroidX, etc.) se resuelvan correctamente
 allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.core:core:1.16.0'
+            force 'androidx.core:core-ktx:1.16.0'
+        }
+    }
     repositories {
         google()
         mavenCentral()

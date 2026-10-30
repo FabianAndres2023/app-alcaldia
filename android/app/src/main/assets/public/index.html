@@ -26,6 +26,8 @@
   <link rel="icon" href="logo.png" />
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="contacto.css" />
+  <link rel="stylesheet" href="turismo.css" />
 </head>
 
 <body>
@@ -123,7 +125,7 @@
       </nav>
 
       <footer>
-        <p>Copyright 2025 - Todos los derechos reservados</p>
+        <p>Copyright 2026 - Todos los derechos reservados</p>
       </footer>
 
       <div class="bottom-curve" aria-hidden="true"></div>
@@ -172,25 +174,41 @@
           <span class="label">PQRSDF</span>
         </button>
 
-        <a
-          class="card small-card link-card"
-          href="https://tulua.gov.co/calendario/"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          class="card small-card"
+          data-target="eventos"
         >
           <span class="icon" aria-hidden="true">🎉</span>
           <span class="label">¿QUÉ HAY PARA HACER?</span>
-        </a>
+        </button>
 
-        <a
-          class="card small-card link-card"
-          href="https://tulua.gov.co/turismo/"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          class="card small-card"
+          data-target="turismo"
         >
           <span class="icon" aria-hidden="true">📍</span>
           <span class="label">¿QUÉ HAY PARA VISITAR?</span>
-        </a>
+        </button>
+
+        <button
+          type="button"
+          class="card small-card"
+          data-target="contacto"
+        >
+          <span class="icon" aria-hidden="true">🏛️</span>
+          <span class="label">ATENCIÓN AL CIUDADANO</span>
+        </button>
+
+        <button
+          type="button"
+          class="card small-card"
+          data-target="favoritos"
+        >
+          <span class="icon" aria-hidden="true">⭐</span>
+          <span class="label">MIS FAVORITOS</span>
+        </button>
       </div>
 
       <button
@@ -264,9 +282,188 @@
       </button>
     </section>
 
+    <!-- ========== EVENTOS ========== -->
+    <section
+      id="eventos"
+      class="screen"
+      aria-labelledby="eventos-title"
+    >
+      <header class="menu-hero">
+        <div class="menu-copy">
+          <h2 id="eventos-title">¿Qué hay para hacer?</h2>
+          <p>Festividades y eventos de Tuluá</p>
+        </div>
+
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="header-logo"
+        />
+      </header>
+
+      <div class="eventos-toolbar">
+        <button
+          type="button"
+          id="btn-filtro-favoritos"
+          class="chip-filtro"
+        >
+          ⭐ Ver mis favoritos
+        </button>
+      </div>
+
+      <div id="eventos-grid" class="eventos-grid"></div>
+
+      <button
+        type="button"
+        class="btn-ingresar btn-volver"
+        data-target="menu"
+      >
+        <span aria-hidden="true">⬅️</span>
+        Volver
+      </button>
+    </section>
+
+    <!-- ========== ATENCIÓN AL CIUDADANO ========== -->
+    <section
+      id="contacto"
+      class="screen"
+      aria-labelledby="contacto-title"
+    >
+      <header class="menu-hero">
+        <div class="menu-copy">
+          <h2 id="contacto-title">Atención al ciudadano</h2>
+          <p>Contacta a la Alcaldía de Tuluá</p>
+        </div>
+
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="header-logo"
+        />
+      </header>
+
+      <div id="contacto-lista" class="contacto-lista"></div>
+
+      <button
+        type="button"
+        class="btn-ingresar btn-volver"
+        data-target="menu"
+      >
+        <span aria-hidden="true">⬅️</span>
+        Volver
+      </button>
+    </section>
+
+    <!-- ========== TURISMO ========== -->
+    <section
+      id="turismo"
+      class="screen"
+      aria-labelledby="turismo-title"
+    >
+      <header class="menu-hero">
+        <div class="menu-copy">
+          <h2 id="turismo-title">¿Qué hay para visitar?</h2>
+          <p>Dónde quedarse en Tuluá</p>
+        </div>
+
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="header-logo"
+        />
+      </header>
+
+      <div class="tur-toolbar">
+        <input
+          type="search"
+          id="tur-buscar"
+          class="tur-buscar"
+          placeholder="Buscar un lugar..."
+          aria-label="Buscar un lugar"
+          autocomplete="off"
+        />
+
+        <div id="tur-chips" class="tur-chips"></div>
+
+        <div class="tur-acciones-barra">
+          <p id="tur-contador" class="tur-contador"></p>
+
+          <button
+            type="button"
+            id="tur-btn-fav"
+            class="chip-filtro"
+          >
+            ⭐ Ver mis favoritos
+          </button>
+        </div>
+      </div>
+
+      <div id="tur-lista" class="tur-lista"></div>
+
+      <a
+        class="btn-evento"
+        style="align-self:center;margin:4px 16px 0;"
+        href="https://tulua.gov.co/turismo/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Ver más en tulua.gov.co/turismo
+      </a>
+
+      <button
+        type="button"
+        class="btn-ingresar btn-volver"
+        data-target="menu"
+      >
+        <span aria-hidden="true">⬅️</span>
+        Volver
+      </button>
+    </section>
+
+    <!-- ========== MIS FAVORITOS ========== -->
+    <section
+      id="favoritos"
+      class="screen"
+      aria-labelledby="favoritos-title"
+    >
+      <header class="menu-hero">
+        <div class="menu-copy">
+          <h2 id="favoritos-title">Mis favoritos</h2>
+          <p>Eventos y lugares que guardaste</p>
+        </div>
+
+        <img
+          src="logo.png"
+          alt="Logo de la Alcaldía de Tuluá"
+          class="header-logo"
+        />
+      </header>
+
+      <div id="fav-eventos"></div>
+      <div id="fav-lugares"></div>
+
+      <p id="fav-vacio" class="fav-vacio">
+        Aún no tienes favoritos. Toca la estrella en un evento
+        o en un lugar para guardarlo aquí.
+      </p>
+
+      <button
+        type="button"
+        class="btn-ingresar btn-volver"
+        data-target="menu"
+      >
+        <span aria-hidden="true">⬅️</span>
+        Volver
+      </button>
+    </section>
+
   </main>
 
   <script src="app.js" defer></script>
+  <script src="contacto.js" defer></script>
+  <script src="turismo-datos.js" defer></script>
+  <script src="turismo.js" defer></script>
+  <script src="mejoras.js" defer></script>
 
   <script>
     window.addEventListener("load", function () {
